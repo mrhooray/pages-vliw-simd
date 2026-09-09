@@ -1,0 +1,1460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>MCTS 1469</title>
+<style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:75%;max-width:none;height:calc(100vh - 2rem);margin:0 auto;border:0}@media(max-width:980px){iframe{width:100%}}</style>
+</head>
+<body>
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="MCTS 1469" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
+&lt;title&gt;MCTS 1469&lt;/title&gt;
+&lt;style&gt;:root {
+  color-scheme: light dark;
+  background-color: var(--background) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: light-dark(rgb(255 255 255), rgb(24 24 24));
+  --foreground: light-dark(rgb(26 28 31), rgb(255 255 255));
+  --card: color-mix(in oklab, var(--foreground) 5%, transparent);
+  --card-foreground: var(--foreground);
+  --popover: light-dark(rgb(255 255 255), rgb(45 45 45));
+  --popover-foreground: var(--foreground);
+  --primary: light-dark(rgb(51 156 255), rgb(131 195 255));
+  --primary-foreground: light-dark(rgb(255 255 255), rgb(13 13 13));
+  --secondary: light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%));
+  --secondary-foreground: var(--foreground);
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: light-dark(
+    rgb(26 28 31 / 49.4%),
+    rgb(255 255 255 / 49.8%)
+  );
+  --accent: light-dark(rgb(229 242 255), rgb(13 39 63));
+  --accent-foreground: var(--primary);
+  --destructive: light-dark(rgb(226 85 7), rgb(255 133 73));
+  --border: light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%));
+  --input: light-dark(
+    rgb(26 28 31 / 11.8%),
+    color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+  );
+  --ring: light-dark(rgb(51 156 255), rgb(131 195 255 / 76%));
+  --font-size-base: 14px;
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, &quot;Segoe UI&quot;, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, &quot;Liberation Mono&quot;,
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --radius: 12.5px;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url(&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 17 17&#x27;%3E%3Cpath d=&#x27;M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z&#x27;/%3E%3C/svg%3E&quot;);
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+  --color-background-primary: var(--background);
+  --color-text-primary: var(--foreground);
+  --color-border-secondary: var(--border);
+}
+
+:root[data-theme=&quot;light&quot;] {
+  color-scheme: light;
+}
+
+:root[data-theme=&quot;dark&quot;] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html &gt; body {
+  margin: 0;
+  padding: 5px;
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--viz-font-weight-medium);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive &gt; .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align=&quot;right&quot;]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align=&quot;center&quot;]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: superellipse(1.5);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget &gt; :not(.card) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls &gt; .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls &gt; .form-label &gt; :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type=&quot;file&quot;] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type=&quot;file&quot;]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type=&quot;file&quot;]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type=&quot;color&quot;] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: superellipse(1.5);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type=&quot;checkbox&quot;]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: &quot;&quot;;
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type=&quot;radio&quot;] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type=&quot;radio&quot;]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: &quot;&quot;;
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+    [aria-pressed=&quot;true&quot;],
+    [aria-selected=&quot;true&quot;],
+    .is-selected
+  ) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed=&quot;true&quot;], [aria-selected=&quot;true&quot;], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget &gt; svg {
+  width: 100%;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html&gt;body{padding:0}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;mcts-zsmn9qzt&quot;&gt;
+  &lt;section class=&quot;card&quot; id=&quot;mcts-zsmn9qzt-detail&quot; aria-live=&quot;polite&quot;&gt;
+    &lt;div class=&quot;viz-row&quot;&gt;
+      &lt;span class=&quot;viz-badge&quot; id=&quot;mcts-zsmn9qzt-candidate-index&quot;&gt;&lt;/span&gt;
+      &lt;code id=&quot;mcts-zsmn9qzt-candidate-id&quot;&gt;&lt;/code&gt;
+      &lt;strong id=&quot;mcts-zsmn9qzt-cycles&quot;&gt;&lt;/strong&gt;
+      &lt;span class=&quot;text-muted&quot; id=&quot;mcts-zsmn9qzt-parent-delta&quot;&gt;&lt;/span&gt;
+      &lt;span id=&quot;mcts-zsmn9qzt-decision&quot;&gt;&lt;/span&gt;
+      &lt;span class=&quot;text-muted&quot; id=&quot;mcts-zsmn9qzt-visits&quot;&gt;&lt;/span&gt;
+      &lt;span class=&quot;text-muted&quot; id=&quot;mcts-zsmn9qzt-elapsed&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;mcts-copy&quot;&gt;&lt;span class=&quot;text-muted&quot;&gt;Hypothesis&lt;/span&gt; &lt;span id=&quot;mcts-zsmn9qzt-hypothesis&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;text-small text-muted&quot; id=&quot;mcts-zsmn9qzt-decision-reason&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;text-small text-muted&quot; id=&quot;mcts-zsmn9qzt-evaluation&quot;&gt;&lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;div class=&quot;viz-row text-small&quot; aria-label=&quot;Tree legend&quot;&gt;
+    &lt;span class=&quot;mcts-legend&quot;&gt;&lt;span class=&quot;mcts-key mcts-key-path&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;Selected lineage&lt;/span&gt;
+    &lt;span class=&quot;mcts-legend&quot;&gt;&lt;span class=&quot;mcts-key mcts-key-keep&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;Kept&lt;/span&gt;
+    &lt;span class=&quot;mcts-legend&quot;&gt;&lt;span class=&quot;mcts-key mcts-key-discard&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;Discarded&lt;/span&gt;
+    &lt;span class=&quot;mcts-legend&quot;&gt;&lt;span class=&quot;mcts-key mcts-key-failed&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;Failed&lt;/span&gt;
+    &lt;span class=&quot;text-muted&quot;&gt;Larger node = more MCTS visits&lt;/span&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;mcts-stage&quot;&gt;
+    &lt;svg id=&quot;mcts-zsmn9qzt-svg&quot; role=&quot;img&quot; aria-labelledby=&quot;mcts-zsmn9qzt-title mcts-zsmn9qzt-desc&quot;&gt;&lt;/svg&gt;
+    &lt;div class=&quot;tooltip&quot; id=&quot;mcts-zsmn9qzt-tooltip&quot; role=&quot;status&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script type=&quot;application/json&quot; id=&quot;mcts-zsmn9qzt-data&quot;&gt;[{&quot;candidate_index&quot;:1,&quot;id&quot;:&quot;root&quot;,&quot;parent_id&quot;:null,&quot;commit_sha&quot;:&quot;8b97a071665553bca864427031444cf8d6fe791a&quot;,&quot;cycles&quot;:147734,&quot;score&quot;:1.0,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:64,&quot;mcts_value_sum&quot;:5374.176,&quot;hypothesis&quot;:&quot;baseline&quot;,&quot;eval_summary&quot;:&quot;Canonical baseline passed the frozen correctness workload at 147734 cycles and score 1.0.&quot;,&quot;decision_reason&quot;:&quot;Retain as the initial comparison point.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785071296694,&quot;completed_at&quot;:1785071650851,&quot;elapsed_seconds&quot;:354.2},{&quot;candidate_index&quot;:2,&quot;id&quot;:&quot;cand_681a4a3452df&quot;,&quot;parent_id&quot;:&quot;root&quot;,&quot;commit_sha&quot;:&quot;0bd3ec7dd60e7c1b90c4b8a9d60090c3566d34a9&quot;,&quot;cycles&quot;:6656,&quot;score&quot;:22.195613,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:63,&quot;mcts_value_sum&quot;:5373.176,&quot;hypothesis&quot;:&quot;Processing the batch in VLEN-wide vectors and packing independent engine slots into VLIW bundles will remove most scalar instruction overhead and substantially reduce cycles while preserving the exact hash and tree traversal.&quot;,&quot;eval_summary&quot;:&quot;SIMD batch traversal with VLIW packing passed canonical correctness and reduced cycles from 147734 to 6656 (score 22.1956). Local checks also covered remainder batches and intermediate vector values. The implementation is O(rounds*batch), uses fixed scratch, and retains a scalar remainder path.&quot;,&quot;decision_reason&quot;:&quot;Large correct improvement with reasonable localized complexity; retain as the new best and base for scheduling refinements.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785071669310,&quot;completed_at&quot;:1785072014660,&quot;elapsed_seconds&quot;:718.0},{&quot;candidate_index&quot;:3,&quot;id&quot;:&quot;cand_2a7c6f6ca508&quot;,&quot;parent_id&quot;:&quot;cand_681a4a3452df&quot;,&quot;commit_sha&quot;:&quot;055d22ff8aac2fc2ff87ef6f513f0d8dc4c22fc2&quot;,&quot;cycles&quot;:3328,&quot;score&quot;:44.391226,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:62,&quot;mcts_value_sum&quot;:5350.98,&quot;hypothesis&quot;:&quot;A dependency-aware software pipeline across vector groups can fill currently idle load, valu, ALU, and store slots and reduce the 6656-cycle result without changing data representation or hash semantics.&quot;,&quot;eval_summary&quot;:&quot;Dependency-DAG list scheduling across up to 24 SIMD vector groups passed canonical correctness and reduced cycles from 6656 to 3328 (score 44.3912). Noncanonical final-memory and intermediate-debug checks passed. Complexity increased through an internal scheduler but remains localized to program construction.&quot;,&quot;decision_reason&quot;:&quot;A clean 2x improvement over the parent with exact correctness; retain as the new best despite added scheduling complexity.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785072027817,&quot;completed_at&quot;:1785072217359,&quot;elapsed_seconds&quot;:920.7},{&quot;candidate_index&quot;:4,&quot;id&quot;:&quot;cand_0f518ca7e16d&quot;,&quot;parent_id&quot;:&quot;cand_2a7c6f6ca508&quot;,&quot;commit_sha&quot;:&quot;705b940c29e006188046508d4056776a77c1fff9&quot;,&quot;cycles&quot;:3044,&quot;score&quot;:48.532852,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:61,&quot;mcts_value_sum&quot;:5306.589,&quot;hypothesis&quot;:&quot;Keeping all 256 indices and values resident in scratch across rounds will eliminate repeated input vloads and intermediate vstores, reducing load/store pressure toward the unavoidable forest-gather lower bound.&quot;,&quot;eval_summary&quot;:&quot;Round-persistent scratch state passed canonical correctness and reduced cycles from 3328 to 3044 (score 48.5329). It loads/stores vectors once, retains scalar and oversized fallbacks, and passed debug-enabled noncanonical checks including a 201-element multi-chunk case at 1405/1536 scratch words.&quot;,&quot;decision_reason&quot;:&quot;A meaningful 8.5% cycle reduction with bounded O(batch) scratch and no correctness loss; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785072233348,&quot;completed_at&quot;:1785072392430,&quot;elapsed_seconds&quot;:1095.7},{&quot;candidate_index&quot;:5,&quot;id&quot;:&quot;cand_76448d5f56be&quot;,&quot;parent_id&quot;:&quot;cand_0f518ca7e16d&quot;,&quot;commit_sha&quot;:&quot;326aa7ca6579e0ae36d11d425a268e7680f5eaf2&quot;,&quot;cycles&quot;:2979,&quot;score&quot;:49.591809,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:60,&quot;mcts_value_sum&quot;:5258.056,&quot;hypothesis&quot;:&quot;For synchronized shallow traversal depths, preloading the small tree prefix and constructing per-lane node vectors with broadcasts, bit tests, and vselect will cost fewer scheduled cycles than eight scalar gather loads per vector.&quot;,&quot;eval_summary&quot;:&quot;Preloaded depths 0-2 with balanced vector selection passed canonical correctness and reduced cycles from 3044 to 2979 (score 49.5918). The fixed prefix costs 64 scratch words, adds no per-group scratch, and retains gathers at depth 3+; noncanonical checks covered wraparound and fallback.&quot;,&quot;decision_reason&quot;:&quot;A correct 65-cycle improvement with a conservative cutoff and modest fixed complexity; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785072422135,&quot;completed_at&quot;:1785072586564,&quot;elapsed_seconds&quot;:1289.9},{&quot;candidate_index&quot;:6,&quot;id&quot;:&quot;cand_ed9b57ca1e12&quot;,&quot;parent_id&quot;:&quot;cand_76448d5f56be&quot;,&quot;commit_sha&quot;:&quot;2dfa08dc17ec94f1259cbf1e3b93e5bb56c9456f&quot;,&quot;cycles&quot;:2550,&quot;score&quot;:57.934902,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:59,&quot;mcts_value_sum&quot;:5208.464,&quot;hypothesis&quot;:&quot;Fusing the additive-left-shift hash stages into one vector multiply_add each will preserve exact 32-bit modular semantics while removing six dependent valu operations per vector-round.&quot;,&quot;eval_summary&quot;:&quot;Exact multiply_add fusion for hash stages 0, 2, and 4 passed canonical correctness and reduced cycles from 2979 to 2550 (score 57.9349). Debug stage boundaries remain observable; three vector constants were added and the scalar remainder was unchanged.&quot;,&quot;decision_reason&quot;:&quot;A large 14.4% reduction from a simple exact algebraic transformation; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785072600744,&quot;completed_at&quot;:1785072680165,&quot;elapsed_seconds&quot;:1383.5},{&quot;candidate_index&quot;:7,&quot;id&quot;:&quot;cand_5a1987cc59fb&quot;,&quot;parent_id&quot;:&quot;cand_ed9b57ca1e12&quot;,&quot;commit_sha&quot;:&quot;3690edafe14f0d630121111fee33041bc98b87d9&quot;,&quot;cycles&quot;:2492,&quot;score&quot;:59.283307,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:58,&quot;mcts_value_sum&quot;:5150.529,&quot;hypothesis&quot;:&quot;Computing the branch offset directly as 1 + (hash &amp; 1) will remove one dependent valu instruction per vector-round while producing the identical child index.&quot;,&quot;eval_summary&quot;:&quot;Direct branch offset 1+(hash&amp;1) passed canonical correctness and reduced cycles from 2550 to 2492 (score 59.2833), preserving next-index debug and wrap dependencies.&quot;,&quot;decision_reason&quot;:&quot;A simple exact simplification yielding 58 fewer cycles; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785072692666,&quot;completed_at&quot;:1785072737103,&quot;elapsed_seconds&quot;:1440.4},{&quot;candidate_index&quot;:8,&quot;id&quot;:&quot;cand_3fe674f07ecc&quot;,&quot;parent_id&quot;:&quot;cand_5a1987cc59fb&quot;,&quot;commit_sha&quot;:&quot;9d3655845833b9cc10e0481e0024425b3e3d68da&quot;,&quot;cycles&quot;:2276,&quot;score&quot;:64.90949,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:57,&quot;mcts_value_sum&quot;:5091.246,&quot;hypothesis&quot;:&quot;Aliasing per-group gather temporaries with hash temporaries whose lifetimes do not overlap will fit all 32 canonical vectors in one scheduler window and remove chunk drain/fill overhead without changing instructions within a task chain.&quot;,&quot;eval_summary&quot;:&quot;Aliasing gather scratch with later hash temporaries fit all 32 vectors in one scheduling window, passed canonical correctness, and reduced cycles from 2492 to 2276 (score 64.9095). Debug-enabled noncanonical checks also passed.&quot;,&quot;decision_reason&quot;:&quot;A substantial 8.7% reduction from proven lifetime reuse, with no algorithmic change; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785072781097,&quot;completed_at&quot;:1785072917763,&quot;elapsed_seconds&quot;:1621.1},{&quot;candidate_index&quot;:9,&quot;id&quot;:&quot;cand_1d57faf24f16&quot;,&quot;parent_id&quot;:&quot;cand_3fe674f07ecc&quot;,&quot;commit_sha&quot;:&quot;5d9039a11a45ab52f60504811aaae4903bcf64a8&quot;,&quot;cycles&quot;:2336,&quot;score&quot;:63.242295,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:63.242,&quot;hypothesis&quot;:&quot;Ranking ready DAG tasks by remaining critical-path length and engine scarcity instead of group order will reduce tail bubbles and improve packing while preserving the identical dependency-valid program semantics.&quot;,&quot;eval_summary&quot;:&quot;Critical-path/engine-pressure priority passed canonical correctness but regressed from 2276 to 2336 cycles (score 63.2423). The existing group-order policy packs this homogeneous DAG better despite lacking explicit depth awareness.&quot;,&quot;decision_reason&quot;:&quot;Discard the 60-cycle regression; retain the parent scheduler policy.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785072933434,&quot;completed_at&quot;:1785073021355,&quot;elapsed_seconds&quot;:1724.7},{&quot;candidate_index&quot;:10,&quot;id&quot;:&quot;cand_b5fcb74595d4&quot;,&quot;parent_id&quot;:&quot;cand_3fe674f07ecc&quot;,&quot;commit_sha&quot;:&quot;931147a1318f705bf90f8814f96cf077169c9a10&quot;,&quot;cycles&quot;:2002,&quot;score&quot;:73.793207,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:55,&quot;mcts_value_sum&quot;:4963.094,&quot;hypothesis&quot;:&quot;Building a single task DAG across consecutive rounds with per-vector state dependencies will overlap round drain/fill tails and reduce cycles while preserving each vector traversal order.&quot;,&quot;eval_summary&quot;:&quot;A single cross-round task DAG with per-group state dependencies passed canonical correctness and reduced cycles from 2276 to 2002 (score 73.7932). Small noncanonical cases also passed; computation and scheduler priority are unchanged.&quot;,&quot;decision_reason&quot;:&quot;A strong 12.0% reduction from safe boundary pipelining; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785073037301,&quot;completed_at&quot;:1785073188540,&quot;elapsed_seconds&quot;:1891.8},{&quot;candidate_index&quot;:11,&quot;id&quot;:&quot;cand_77c67ac36453&quot;,&quot;parent_id&quot;:&quot;cand_b5fcb74595d4&quot;,&quot;commit_sha&quot;:&quot;bcc0f7b5ff6b21875572c7518327b6a9e51af471&quot;,&quot;cycles&quot;:1941,&quot;score&quot;:76.112313,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:54,&quot;mcts_value_sum&quot;:4889.301,&quot;hypothesis&quot;:&quot;Expanding each deep-tree vector address add into eight scalar ALU adds will use otherwise idle ALU capacity, sustain gather demand, and free valu slots for hash work, reducing the cross-round schedule length.&quot;,&quot;eval_summary&quot;:&quot;Scalar-ALU deep gather address formation passed canonical correctness and reduced cycles from 2002 to 1941 (score 76.1123), confirming useful ALU/VALU load balancing.&quot;,&quot;decision_reason&quot;:&quot;A localized engine substitution saves 61 cycles with no semantic or maintenance penalty; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785073219781,&quot;completed_at&quot;:1785073286382,&quot;elapsed_seconds&quot;:1989.7},{&quot;candidate_index&quot;:12,&quot;id&quot;:&quot;cand_fce3b45fef35&quot;,&quot;parent_id&quot;:&quot;cand_77c67ac36453&quot;,&quot;commit_sha&quot;:&quot;37a4e09d93a0e7758813cab61cb554fc00f89fc7&quot;,&quot;cycles&quot;:1859,&quot;score&quot;:79.469607,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:53,&quot;mcts_value_sum&quot;:4813.189,&quot;hypothesis&quot;:&quot;Executing the eight independent parity lane operations on scalar ALU will exploit spare ALU bandwidth and remove one valu operation per vector-round without changing dependency latency.&quot;,&quot;eval_summary&quot;:&quot;Scalar-ALU parity tasks passed canonical correctness and reduced cycles from 1941 to 1859 (score 79.4696), freeing one valu operation per vector-round.&quot;,&quot;decision_reason&quot;:&quot;An 82-cycle improvement from a localized engine rebalance; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785073303992,&quot;completed_at&quot;:1785073354670,&quot;elapsed_seconds&quot;:2058.0},{&quot;candidate_index&quot;:13,&quot;id&quot;:&quot;cand_fbea3c53740a&quot;,&quot;parent_id&quot;:&quot;cand_fce3b45fef35&quot;,&quot;commit_sha&quot;:&quot;e68cfb70e1219c09e8c1e5169023559b983ad119&quot;,&quot;cycles&quot;:null,&quot;score&quot;:0.0,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:0.0,&quot;hypothesis&quot;:&quot;Moving the eight lane-wise branch-offset additions to scalar ALU will further relieve valu pressure while remaining within available ALU throughput and preserving one-cycle dependency latency.&quot;,&quot;eval_summary&quot;:&quot;Canonical construction failed before measurement because one_const was referenced inside _schedule_vector_chunk without being passed into that helper. No trustworthy score was produced; the scalar branch-offset hypothesis remains untested.&quot;,&quot;decision_reason&quot;:&quot;Discard the invalid implementation and retry the intervention fresh with explicit scalar-one parameter threading.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785073365220,&quot;completed_at&quot;:1785073417680,&quot;elapsed_seconds&quot;:2121.0},{&quot;candidate_index&quot;:14,&quot;id&quot;:&quot;cand_811779b49992&quot;,&quot;parent_id&quot;:&quot;cand_fce3b45fef35&quot;,&quot;commit_sha&quot;:&quot;50c4f9a845100a357cddfd8045ab8d741abbe8c3&quot;,&quot;cycles&quot;:1760,&quot;score&quot;:83.939773,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:51,&quot;mcts_value_sum&quot;:4733.719,&quot;hypothesis&quot;:&quot;Moving the eight lane-wise branch-offset additions to scalar ALU will further relieve valu pressure while preserving latency; the prior attempt did not test this because it failed at construction from a missing helper parameter.&quot;,&quot;eval_summary&quot;:&quot;The corrected scalar branch-offset implementation passed canonical correctness and reduced cycles from 1859 to 1760 (score 83.9398). End-to-end noncanonical correctness also passed.&quot;,&quot;decision_reason&quot;:&quot;A 99-cycle improvement validates the hypothesis; retain as new best. The earlier failed attempt was purely an integration defect.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785073427309,&quot;completed_at&quot;:1785073484503,&quot;elapsed_seconds&quot;:2187.8},{&quot;candidate_index&quot;:15,&quot;id&quot;:&quot;cand_a66aeb0e4e48&quot;,&quot;parent_id&quot;:&quot;cand_811779b49992&quot;,&quot;commit_sha&quot;:&quot;161d6512f101adc879901764e237dbd7ca566aec&quot;,&quot;cycles&quot;:1900,&quot;score&quot;:77.754737,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:77.755,&quot;hypothesis&quot;:&quot;Scalarizing the in-range comparison for exactly half the vector groups will consume spare ALU issue cycles while reducing valu pressure, without making ALU the global bottleneck.&quot;,&quot;eval_summary&quot;:&quot;Half-group scalar range comparisons passed correctness but regressed from 1760 to 1900 cycles (score 77.7547). Static aggregate ALU headroom did not translate to schedule-local capacity; the added same-chain ALU pressure caused stalls.&quot;,&quot;decision_reason&quot;:&quot;Discard the 140-cycle regression and keep range comparisons on valu.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785073506188,&quot;completed_at&quot;:1785073571367,&quot;elapsed_seconds&quot;:2274.7},{&quot;candidate_index&quot;:16,&quot;id&quot;:&quot;cand_8fbf2aea6272&quot;,&quot;parent_id&quot;:&quot;cand_811779b49992&quot;,&quot;commit_sha&quot;:&quot;a6101ca57e420e01ca2009207547011f5cc68ecd&quot;,&quot;cycles&quot;:1630,&quot;score&quot;:90.634356,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:49,&quot;mcts_value_sum&quot;:4572.025,&quot;hypothesis&quot;:&quot;Using the build-time synchronized depth makes dynamic range checks unnecessary: non-leaf children are always valid and leaf children always wrap, eliminating nearly all wrap tasks while preserving exact indices.&quot;,&quot;eval_summary&quot;:&quot;Depth-static wrap handling passed canonical correctness and reduced cycles from 1760 to 1630 (score 90.6344). Non-leaf compare/mask tasks were removed; leaf rounds zero indices directly; wrap/nonwrap local checks passed.&quot;,&quot;decision_reason&quot;:&quot;A strong 7.4% reduction from a valid workload invariant and simpler task graph; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785073594495,&quot;completed_at&quot;:1785073681529,&quot;elapsed_seconds&quot;:2384.8},{&quot;candidate_index&quot;:17,&quot;id&quot;:&quot;cand_31f00ad5f417&quot;,&quot;parent_id&quot;:&quot;cand_8fbf2aea6272&quot;,&quot;commit_sha&quot;:&quot;69d9138c35939f9f63462e0b25fa07eb1bf47170&quot;,&quot;cycles&quot;:1640,&quot;score&quot;:90.081707,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:90.082,&quot;hypothesis&quot;:&quot;Preloading depth-3 nodes and selecting them for half the vector groups will reduce load bottleneck pressure on the two depth-3 rounds while using spare flow capacity, outperforming either all-gather or all-select.&quot;,&quot;eval_summary&quot;:&quot;Half-group depth-3 vector selection passed canonical correctness but regressed from 1630 to 1640 cycles (score 90.0817). Added flow/valu selection work slightly outweighed reduced gather load pressure.&quot;,&quot;decision_reason&quot;:&quot;Discard the 10-cycle regression; keep depth 3 on gathers.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785073713526,&quot;completed_at&quot;:1785073799639,&quot;elapsed_seconds&quot;:2502.9},{&quot;candidate_index&quot;:18,&quot;id&quot;:&quot;cand_03e79c265e58&quot;,&quot;parent_id&quot;:&quot;cand_8fbf2aea6272&quot;,&quot;commit_sha&quot;:&quot;7bc0ac956a6167b7308b30ea32c2883c2c325520&quot;,&quot;cycles&quot;:1567,&quot;score&quot;:94.278239,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:47,&quot;mcts_value_sum&quot;:4391.309,&quot;hypothesis&quot;:&quot;Integrating one-time resident-state loads and final stores into the all-round DAG will overlap boundary I/O with computation and remove scheduler fill/drain cycles without changing steady-state work.&quot;,&quot;eval_summary&quot;:&quot;Integrated resident I/O and all rounds in one DAG passed canonical correctness and reduced cycles from 1630 to 1567 (score 94.2782). Pointer/load and final-store dependencies are explicit; scalar remainder behavior is preserved.&quot;,&quot;decision_reason&quot;:&quot;A 63-cycle boundary-overlap improvement with simpler phase structure; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785073813433,&quot;completed_at&quot;:1785073915558,&quot;elapsed_seconds&quot;:2618.9},{&quot;candidate_index&quot;:19,&quot;id&quot;:&quot;cand_66df3d1b1cb2&quot;,&quot;parent_id&quot;:&quot;cand_03e79c265e58&quot;,&quot;commit_sha&quot;:&quot;128dc2efaffc65a370ffa73dfb2b6327f17d9f8a&quot;,&quot;cycles&quot;:1547,&quot;score&quot;:95.497091,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:46,&quot;mcts_value_sum&quot;:4297.03,&quot;hypothesis&quot;:&quot;Dependency-aware VLIW packing of initialization will reduce fixed cycles by overlapping independent header address constants, header loads, scalar constants, shallow-prefix loads, and vector broadcasts.&quot;,&quot;eval_summary&quot;:&quot;Dependency-packed initialization passed canonical correctness and reduced cycles from 1567 to 1547 (score 95.4971). Header loads, constants, shallow vloads, and broadcasts now use legal multi-slot bundles with the pause boundary preserved.&quot;,&quot;decision_reason&quot;:&quot;A clean fixed-cost 20-cycle reduction; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785073931804,&quot;completed_at&quot;:1785074114626,&quot;elapsed_seconds&quot;:2817.9},{&quot;candidate_index&quot;:20,&quot;id&quot;:&quot;cand_10a92c97fd86&quot;,&quot;parent_id&quot;:&quot;cand_66df3d1b1cb2&quot;,&quot;commit_sha&quot;:&quot;c2c8585df1d91d1248ac024335202196647fa41a&quot;,&quot;cycles&quot;:1547,&quot;score&quot;:95.497091,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:45,&quot;mcts_value_sum&quot;:4201.533,&quot;hypothesis&quot;:&quot;On leaf-depth rounds, directly zeroing idx after the final hash will eliminate dead parity, branch-offset, and child-index tasks while preserving all observable final state and subsequent traversal.&quot;,&quot;eval_summary&quot;:&quot;Leaf dead-index elimination passed canonical correctness and tied the parent at 1547 cycles (score 95.4971). It removes parity, branch, child-index, and dead next_idx debug tasks on leaf rounds while preserving final state across wraps.&quot;,&quot;decision_reason&quot;:&quot;Keep the equal-scoring simpler task graph; removed operations may also enable later scheduling combinations.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785074134420,&quot;completed_at&quot;:1785074225707,&quot;elapsed_seconds&quot;:2929.0},{&quot;candidate_index&quot;:21,&quot;id&quot;:&quot;cand_9bf8dab7ff4f&quot;,&quot;parent_id&quot;:&quot;cand_10a92c97fd86&quot;,&quot;commit_sha&quot;:&quot;e462c46977de86671d9f8c43ce4a5d0f6e83cad8&quot;,&quot;cycles&quot;:1618,&quot;score&quot;:91.306551,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:91.307,&quot;hypothesis&quot;:&quot;Scalarizing node-value XOR for one quarter of groups will use remaining ALU headroom without the local contention seen in range checks, freeing valu slots and shortening the mixed-engine schedule.&quot;,&quot;eval_summary&quot;:&quot;Quarter-group scalar node XOR passed correctness but regressed from 1547 to 1618 cycles (score 91.3066). Aggregate ALU headroom again failed to reflect schedule-local contention.&quot;,&quot;decision_reason&quot;:&quot;Discard the 71-cycle regression; keep node XOR on valu.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785074254192,&quot;completed_at&quot;:1785074339528,&quot;elapsed_seconds&quot;:3042.8},{&quot;candidate_index&quot;:22,&quot;id&quot;:&quot;cand_ca0fd6d13061&quot;,&quot;parent_id&quot;:&quot;cand_10a92c97fd86&quot;,&quot;commit_sha&quot;:&quot;5db2cf99b0845193ec47cf1082b4cf28ea71963d&quot;,&quot;cycles&quot;:1536,&quot;score&quot;:96.18099,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:43,&quot;mcts_value_sum&quot;:4014.73,&quot;hypothesis&quot;:&quot;Prioritizing ready tasks that immediately unlock load-engine work will reduce gather starvation caused by ALU contention, shortening the schedule without changing the task DAG.&quot;,&quot;eval_summary&quot;:&quot;Narrow load-unlocker priority passed canonical correctness and reduced cycles from 1547 to 1536 (score 96.1810). Existing group/task order remains the fallback; only tasks immediately enabling load work receive priority.&quot;,&quot;decision_reason&quot;:&quot;An 11-cycle improvement with targeted evidence and minimal scheduler complexity; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785074349042,&quot;completed_at&quot;:1785074419127,&quot;elapsed_seconds&quot;:3122.4},{&quot;candidate_index&quot;:23,&quot;id&quot;:&quot;cand_2d4523369a32&quot;,&quot;parent_id&quot;:&quot;cand_ca0fd6d13061&quot;,&quot;commit_sha&quot;:&quot;17472577f2aff53dd44961fe2758f221dbfe441f&quot;,&quot;cycles&quot;:1537,&quot;score&quot;:96.118412,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:96.118,&quot;hypothesis&quot;:&quot;Initializing shallow node selection with a direct vselect between the first two candidates will remove a redundant vector copy on every depth-1 and depth-2 group while preserving the same selection chain.&quot;,&quot;eval_summary&quot;:&quot;Direct first-pair shallow selection passed correctness but regressed from 1536 to 1537 cycles (score 96.1184), likely due to altered readiness/packing despite one fewer task.&quot;,&quot;decision_reason&quot;:&quot;Discard the one-cycle regression; retain the existing shallow chain.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785074475507,&quot;completed_at&quot;:1785074539255,&quot;elapsed_seconds&quot;:3242.6},{&quot;candidate_index&quot;:24,&quot;id&quot;:&quot;cand_b1547f174bbc&quot;,&quot;parent_id&quot;:&quot;cand_ca0fd6d13061&quot;,&quot;commit_sha&quot;:&quot;94b00eb362530f7e83fd791f8d2ff9c62c8fdfba&quot;,&quot;cycles&quot;:1518,&quot;score&quot;:97.321476,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:41,&quot;mcts_value_sum&quot;:3822.43,&quot;hypothesis&quot;:&quot;Using the shared broadcast root vector directly in the depth-0 value XOR will remove one per-group copy and dependency on both root rounds without any scratch or engine tradeoff.&quot;,&quot;eval_summary&quot;:&quot;Direct shared-root XOR passed canonical correctness and reduced cycles from 1536 to 1518 (score 97.3215). Root rounds no longer copy the broadcast root into 32 group-local vectors; initial-load and post-wrap dependencies remain correct.&quot;,&quot;decision_reason&quot;:&quot;An 18-cycle improvement with less work and simpler depth-0 handling; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785074546853,&quot;completed_at&quot;:1785074650223,&quot;elapsed_seconds&quot;:3353.5},{&quot;candidate_index&quot;:25,&quot;id&quot;:&quot;cand_3de0a6a4048b&quot;,&quot;parent_id&quot;:&quot;cand_b1547f174bbc&quot;,&quot;commit_sha&quot;:&quot;0bb2913ac938f0848631a6912dba34f3331b01de&quot;,&quot;cycles&quot;:1510,&quot;score&quot;:97.837086,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:40,&quot;mcts_value_sum&quot;:3725.109,&quot;hypothesis&quot;:&quot;Replacing depth-1 copy/equality/vselect with offset and multiply_add using a precomputed node difference will shorten each depth-1 selection chain and avoid flow serialization.&quot;,&quot;eval_summary&quot;:&quot;Affine depth-1 interpolation passed canonical correctness and reduced cycles from 1518 to 1510 (score 97.8371). It replaces copy/equality/vselect chains with offset and multiply_add using one precomputed difference vector.&quot;,&quot;decision_reason&quot;:&quot;An exact 8-cycle improvement with simpler per-group depth-1 control flow; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785074667074,&quot;completed_at&quot;:1785074747602,&quot;elapsed_seconds&quot;:3450.9},{&quot;candidate_index&quot;:26,&quot;id&quot;:&quot;cand_56c991867add&quot;,&quot;parent_id&quot;:&quot;cand_3de0a6a4048b&quot;,&quot;commit_sha&quot;:&quot;d0caa8187f66f436b95f77c0d39d6a00b487ef72&quot;,&quot;cycles&quot;:1573,&quot;score&quot;:93.918627,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:93.919,&quot;hypothesis&quot;:&quot;Exact bilinear interpolation over the two-bit depth-2 offset will replace three serialized vselects with a shorter arithmetic dependency chain and improve scheduling.&quot;,&quot;eval_summary&quot;:&quot;Depth-2 bilinear interpolation passed correctness but regressed from 1510 to 1573 cycles (score 93.9186). Additional arithmetic and coefficient initialization outweighed removal of flow selects.&quot;,&quot;decision_reason&quot;:&quot;Discard the 63-cycle regression; retain sequential depth-2 selection.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785074768187,&quot;completed_at&quot;:1785074907588,&quot;elapsed_seconds&quot;:3610.9},{&quot;candidate_index&quot;:27,&quot;id&quot;:&quot;cand_62e642dd8fb7&quot;,&quot;parent_id&quot;:&quot;cand_3de0a6a4048b&quot;,&quot;commit_sha&quot;:&quot;b704a27adb1dc66533d78d3ad3b3c8b476e358ac&quot;,&quot;cycles&quot;:1520,&quot;score&quot;:97.193421,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:97.193,&quot;hypothesis&quot;:&quot;Splitting each eight-lane scalar parity and branch-offset task into independent four-lane halves will pack the 12-slot ALU near capacity and reduce ALU serialization while preserving lane dependencies.&quot;,&quot;eval_summary&quot;:&quot;Four-lane parity/branch splitting passed correctness but regressed from 1510 to 1520 cycles (score 97.1934). Finer task granularity disrupted scheduler readiness enough to offset ALU packing gains.&quot;,&quot;decision_reason&quot;:&quot;Discard the 10-cycle regression; retain eight-lane ALU tasks.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785074916993,&quot;completed_at&quot;:1785075016637,&quot;elapsed_seconds&quot;:3719.9},{&quot;candidate_index&quot;:28,&quot;id&quot;:&quot;cand_87a834028ef3&quot;,&quot;parent_id&quot;:&quot;cand_3de0a6a4048b&quot;,&quot;commit_sha&quot;:&quot;a094275ca692cf507ed4d459500e30768f2bf87a&quot;,&quot;cycles&quot;:1510,&quot;score&quot;:97.837086,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:3,&quot;mcts_value_sum&quot;:97.837,&quot;hypothesis&quot;:&quot;Omitting initial index vloads will preserve correctness because all input indices and fresh scratch are zero, while reducing load pressure and round-0 dependencies.&quot;,&quot;eval_summary&quot;:&quot;Omitting guaranteed-zero resident index loads passed canonical correctness and tied the parent at 1510 cycles (score 97.8371). It removes 32 load operations while retaining final index stores and the scalar remainder path.&quot;,&quot;decision_reason&quot;:&quot;Keep the equal-scoring simpler program with lower load work; it may expose later scheduling gains.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785075024102,&quot;completed_at&quot;:1785075090635,&quot;elapsed_seconds&quot;:3793.9},{&quot;candidate_index&quot;:29,&quot;id&quot;:&quot;cand_2e7876d20c2d&quot;,&quot;parent_id&quot;:&quot;cand_87a834028ef3&quot;,&quot;commit_sha&quot;:&quot;c4c4ceef20d524a65e1038616d72ead627c2efb4&quot;,&quot;cycles&quot;:null,&quot;score&quot;:0.0,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:0.0,&quot;hypothesis&quot;:&quot;Selecting preloaded depth-3 nodes for exactly one quarter of groups will balance the profiled load and valu resource floors better than the previously regressing half split.&quot;,&quot;eval_summary&quot;:&quot;Quarter depth-3 shallow selection failed canonical correctness.&quot;,&quot;decision_reason&quot;:&quot;Incorrect output values on the canonical case; discard regardless of intended resource balance.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785075151589,&quot;completed_at&quot;:1785075312962,&quot;elapsed_seconds&quot;:4016.3},{&quot;candidate_index&quot;:30,&quot;id&quot;:&quot;cand_1cf1debe9b68&quot;,&quot;parent_id&quot;:&quot;cand_3de0a6a4048b&quot;,&quot;commit_sha&quot;:&quot;d1392b2fa3fa942cb808684aa2102b75cad51205&quot;,&quot;cycles&quot;:1509,&quot;score&quot;:97.901922,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:34,&quot;mcts_value_sum&quot;:3338.322,&quot;hypothesis&quot;:&quot;Replacing canonical build-time header loads for dimensions with constants and loading only the three runtime pointers will reduce initialization latency without changing traversal semantics.&quot;,&quot;eval_summary&quot;:&quot;Build-time dimension specialization passed canonical correctness and reduced cycles from 1510 to 1509.&quot;,&quot;decision_reason&quot;:&quot;One-cycle improvement with fewer redundant header loads and unchanged runtime semantics; retain as new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785075340765,&quot;completed_at&quot;:1785075420752,&quot;elapsed_seconds&quot;:4124.1},{&quot;candidate_index&quot;:31,&quot;id&quot;:&quot;cand_ba5c6f5055ae&quot;,&quot;parent_id&quot;:&quot;cand_1cf1debe9b68&quot;,&quot;commit_sha&quot;:&quot;51acf6690c5a9f274c58f838993f4812c9c54c63&quot;,&quot;cycles&quot;:1509,&quot;score&quot;:97.901922,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:97.902,&quot;hypothesis&quot;:&quot;Using independent address constants for header words 4-6 will expose parallel pointer loads and remove one initialization bundle.&quot;,&quot;eval_summary&quot;:&quot;Independent pointer header addresses passed correctness but tied the 1509-cycle parent.&quot;,&quot;decision_reason&quot;:&quot;No score improvement and added address constants/scratch complexity; retain the simpler parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785075433289,&quot;completed_at&quot;:1785075498221,&quot;elapsed_seconds&quot;:4201.5},{&quot;candidate_index&quot;:32,&quot;id&quot;:&quot;cand_3a4ded55bae5&quot;,&quot;parent_id&quot;:&quot;cand_87a834028ef3&quot;,&quot;commit_sha&quot;:&quot;1113e09b77831b47c85a9fd8d633f58bd91747f0&quot;,&quot;cycles&quot;:null,&quot;score&quot;:0.0,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:0.0,&quot;hypothesis&quot;:&quot;Applying build-time dimension specialization to the no-initial-index-load branch will combine two independent fixed-cost simplifications and improve beyond 1509 cycles.&quot;,&quot;eval_summary&quot;:&quot;Composition attempt failed canonical construction with an IndexError in pointer-header initialization.&quot;,&quot;decision_reason&quot;:&quot;Implementation defect prevents evaluation; discard this candidate.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785075512762,&quot;completed_at&quot;:1785075563541,&quot;elapsed_seconds&quot;:4266.8},{&quot;candidate_index&quot;:33,&quot;id&quot;:&quot;cand_0f01f3ccc048&quot;,&quot;parent_id&quot;:&quot;cand_1cf1debe9b68&quot;,&quot;commit_sha&quot;:&quot;b5b423f230f06d56dccb032acab52e8f84785118&quot;,&quot;cycles&quot;:1509,&quot;score&quot;:97.901922,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:32,&quot;mcts_value_sum&quot;:3142.519,&quot;hypothesis&quot;:&quot;Removing the initial resident-index vload from the 1509-cycle specialized-header parent will preserve correctness because resident indices are zero-initialized and improve or simplify initialization.&quot;,&quot;eval_summary&quot;:&quot;Omitting initial resident-index loads passed correctness and tied 1509 cycles.&quot;,&quot;decision_reason&quot;:&quot;Equal score with fewer canonical load operations; retain the simpler composition.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785075575912,&quot;completed_at&quot;:1785075607294,&quot;elapsed_seconds&quot;:4310.6},{&quot;candidate_index&quot;:34,&quot;id&quot;:&quot;cand_f2c43ea9e1c6&quot;,&quot;parent_id&quot;:&quot;cand_0f01f3ccc048&quot;,&quot;commit_sha&quot;:&quot;734c0589614ab2aed7aa55bc225b1aeee38a50ba&quot;,&quot;cycles&quot;:1510,&quot;score&quot;:97.837086,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:97.837,&quot;hypothesis&quot;:&quot;Deferring each indices output address calculation until final store will reduce startup ALU contention now that indices are not initially loaded.&quot;,&quot;eval_summary&quot;:&quot;Deferred index output pointers passed correctness but regressed from 1509 to 1510 cycles.&quot;,&quot;decision_reason&quot;:&quot;Tail dependency cost exceeded any startup benefit; retain parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785075616972,&quot;completed_at&quot;:1785075728854,&quot;elapsed_seconds&quot;:4432.2},{&quot;candidate_index&quot;:35,&quot;id&quot;:&quot;cand_97df0d28405a&quot;,&quot;parent_id&quot;:&quot;cand_0f01f3ccc048&quot;,&quot;commit_sha&quot;:&quot;fae97e82d3008d17e6afbab56e8ccda243e5505f&quot;,&quot;cycles&quot;:1509,&quot;score&quot;:97.901922,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:97.902,&quot;hypothesis&quot;:&quot;Reversing group priority within the ready-task scheduler will reduce repeated low-index group favoritism and improve cross-group pipeline balance.&quot;,&quot;eval_summary&quot;:&quot;Reverse group priority passed correctness and tied 1509 cycles.&quot;,&quot;decision_reason&quot;:&quot;No score or simplicity gain; retain established scheduler ordering.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785075740197,&quot;completed_at&quot;:1785075776950,&quot;elapsed_seconds&quot;:4480.3},{&quot;candidate_index&quot;:36,&quot;id&quot;:&quot;cand_535aa3df0275&quot;,&quot;parent_id&quot;:&quot;cand_0f01f3ccc048&quot;,&quot;commit_sha&quot;:&quot;f2d5659eea70b2c431b7abaaa45f7b45a4f7030f&quot;,&quot;cycles&quot;:1661,&quot;score&quot;:88.942806,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:88.943,&quot;hypothesis&quot;:&quot;Ordering ready work by task creation order after load-unlocker priority will advance earlier dependency stages across groups and reduce starvation versus permanent group priority.&quot;,&quot;eval_summary&quot;:&quot;Task-order wavefront passed correctness but regressed to 1661 cycles.&quot;,&quot;decision_reason&quot;:&quot;Permanent group priority is important for throughput; discard regression.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785075786928,&quot;completed_at&quot;:1785075817196,&quot;elapsed_seconds&quot;:4520.5},{&quot;candidate_index&quot;:37,&quot;id&quot;:&quot;cand_8b82ea37558e&quot;,&quot;parent_id&quot;:&quot;cand_0f01f3ccc048&quot;,&quot;commit_sha&quot;:&quot;381596ef83062ba22ab70f27fdc714e88e4821a4&quot;,&quot;cycles&quot;:1522,&quot;score&quot;:97.065703,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:97.066,&quot;hypothesis&quot;:&quot;Using preloaded depth-3 selection for one eighth of groups will modestly reduce gather load pressure without the VALU over-shift seen at one half.&quot;,&quot;eval_summary&quot;:&quot;One-eighth depth-3 shallow selection passed correctness but regressed to 1522 cycles.&quot;,&quot;decision_reason&quot;:&quot;Even conservative depth-3 selection adds more scheduling/VALU cost than saved gathers.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785075826930,&quot;completed_at&quot;:1785075926917,&quot;elapsed_seconds&quot;:4630.2},{&quot;candidate_index&quot;:38,&quot;id&quot;:&quot;cand_8a965fd1b54e&quot;,&quot;parent_id&quot;:&quot;cand_0f01f3ccc048&quot;,&quot;commit_sha&quot;:&quot;549f3a7518908f31efc82cabfc985ab719880951&quot;,&quot;cycles&quot;:1749,&quot;score&quot;:84.467696,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:84.468,&quot;hypothesis&quot;:&quot;Moving next-index arithmetic for one quarter of groups from VALU multiply_add to lane ALU multiply-plus-add will relieve the profiled VALU pressure without overwhelming ALU.&quot;,&quot;eval_summary&quot;:&quot;Quarter next-index ALU transfer passed correctness but regressed to 1749 cycles.&quot;,&quot;decision_reason&quot;:&quot;Lane-ALU serialization overwhelms any VALU relief; discard.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785075941869,&quot;completed_at&quot;:1785076002537,&quot;elapsed_seconds&quot;:4705.8},{&quot;candidate_index&quot;:39,&quot;id&quot;:&quot;cand_4ad669f6c921&quot;,&quot;parent_id&quot;:&quot;cand_0f01f3ccc048&quot;,&quot;commit_sha&quot;:&quot;22e2b73e72bd7340f3f22a990f17a4c75e773b1f&quot;,&quot;cycles&quot;:1508,&quot;score&quot;:97.966844,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:26,&quot;mcts_value_sum&quot;:2578.401,&quot;hypothesis&quot;:&quot;Deriving inp_values_p as inp_indices_p plus build-time batch_size will replace one header load with underused ALU work and shorten initialization.&quot;,&quot;eval_summary&quot;:&quot;Derived values pointer passed correctness and improved from 1509 to 1508 cycles.&quot;,&quot;decision_reason&quot;:&quot;One-cycle gain by replacing a header load with a layout-derived ALU operation; retain new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076012943,&quot;completed_at&quot;:1785076073719,&quot;elapsed_seconds&quot;:4777.0},{&quot;candidate_index&quot;:40,&quot;id&quot;:&quot;cand_0f913403f01b&quot;,&quot;parent_id&quot;:&quot;cand_4ad669f6c921&quot;,&quot;commit_sha&quot;:&quot;320eb630ab68b14fdb0f3f38fe7f035a2c5a5fa4&quot;,&quot;cycles&quot;:1508,&quot;score&quot;:97.966844,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:97.967,&quot;hypothesis&quot;:&quot;Deriving inp_indices_p from forest_values_p plus n_nodes will remove the remaining input-pointer header load and improve initialization further.&quot;,&quot;eval_summary&quot;:&quot;Deriving both input pointers passed correctness but tied 1508 cycles.&quot;,&quot;decision_reason&quot;:&quot;No score gain and adds another layout dependency; retain parent that reads indices pointer.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076082154,&quot;completed_at&quot;:1785076110855,&quot;elapsed_seconds&quot;:4814.2},{&quot;candidate_index&quot;:41,&quot;id&quot;:&quot;cand_e5e27b55ccd1&quot;,&quot;parent_id&quot;:&quot;cand_4ad669f6c921&quot;,&quot;commit_sha&quot;:&quot;25c0fb5a16f33ea9e986c427f8f23a9b7722b638&quot;,&quot;cycles&quot;:1507,&quot;score&quot;:98.031851,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:24,&quot;mcts_value_sum&quot;:2382.468,&quot;hypothesis&quot;:&quot;Specializing the fixed seven-word header layout will eliminate all runtime pointer loads and reduce initialization below 1508 cycles.&quot;,&quot;eval_summary&quot;:&quot;Full fixed-layout pointer specialization passed correctness and improved from 1508 to 1507 cycles.&quot;,&quot;decision_reason&quot;:&quot;One-cycle gain and eliminates runtime pointer-header loads; retain new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076118784,&quot;completed_at&quot;:1785076193495,&quot;elapsed_seconds&quot;:4896.8},{&quot;candidate_index&quot;:42,&quot;id&quot;:&quot;cand_8bab691b4b50&quot;,&quot;parent_id&quot;:&quot;cand_e5e27b55ccd1&quot;,&quot;commit_sha&quot;:&quot;51d364b8173b6a9f1faa4fbf34fdc2b8fa521495&quot;,&quot;cycles&quot;:1507,&quot;score&quot;:98.031851,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:23,&quot;mcts_value_sum&quot;:2284.436,&quot;hypothesis&quot;:&quot;Registering the fixed forest base through scratch_const will deduplicate scalar constant 7 used by vector initialization and reduce fixed work or scratch.&quot;,&quot;eval_summary&quot;:&quot;Forest-base constant reuse passed correctness and tied 1507 cycles.&quot;,&quot;decision_reason&quot;:&quot;Equal score with deduplicated scalar constant and less scratch duplication; retain simpler form.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076207847,&quot;completed_at&quot;:1785076268201,&quot;elapsed_seconds&quot;:4971.5},{&quot;candidate_index&quot;:43,&quot;id&quot;:&quot;cand_86e782af6abd&quot;,&quot;parent_id&quot;:&quot;cand_8bab691b4b50&quot;,&quot;commit_sha&quot;:&quot;2f0234a6a78adafe7e77e33928eae079990cc74d&quot;,&quot;cycles&quot;:1505,&quot;score&quot;:98.162126,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:22,&quot;mcts_value_sum&quot;:2186.404,&quot;hypothesis&quot;:&quot;Removing top-level pause and comment debug bundles will reduce fixed issued cycles because submission correctness does not consume the local yield protocol.&quot;,&quot;eval_summary&quot;:&quot;Removing standalone pause/comment scaffolding passed correctness and improved from 1507 to 1505 cycles.&quot;,&quot;decision_reason&quot;:&quot;Two-cycle canonical gain with no submission semantic effect; retain new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076293321,&quot;completed_at&quot;:1785076326935,&quot;elapsed_seconds&quot;:5030.2},{&quot;candidate_index&quot;:44,&quot;id&quot;:&quot;cand_7759bc591004&quot;,&quot;parent_id&quot;:&quot;cand_86e782af6abd&quot;,&quot;commit_sha&quot;:&quot;10e56c59173d32d2be67914f48490a1ec940fec9&quot;,&quot;cycles&quot;:1502,&quot;score&quot;:98.358189,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:21,&quot;mcts_value_sum&quot;:2088.242,&quot;hypothesis&quot;:&quot;Eliminating debug-only wrapped-index tasks will remove artificial per-round dependency nodes and shorten the scheduled program without changing computation.&quot;,&quot;eval_summary&quot;:&quot;Removing wrapped-index debug-only dependency tasks passed correctness and improved from 1505 to 1502 cycles.&quot;,&quot;decision_reason&quot;:&quot;Three-cycle gain by eliminating pure-debug scheduler nodes; retain new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076334623,&quot;completed_at&quot;:1785076367987,&quot;elapsed_seconds&quot;:5071.3},{&quot;candidate_index&quot;:45,&quot;id&quot;:&quot;cand_b5369089ee01&quot;,&quot;parent_id&quot;:&quot;cand_7759bc591004&quot;,&quot;commit_sha&quot;:&quot;b278959fd7b54616e94e79ac7e90b270ccefeb9f&quot;,&quot;cycles&quot;:1502,&quot;score&quot;:98.358189,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:20,&quot;mcts_value_sum&quot;:1989.884,&quot;hypothesis&quot;:&quot;Removing all vector-path debug slots will eliminate debug-engine packing constraints and reduce scheduling length while preserving submission computation.&quot;,&quot;eval_summary&quot;:&quot;Removing vector debug slots passed correctness and tied 1502 cycles.&quot;,&quot;decision_reason&quot;:&quot;Equal score with substantially less submission-irrelevant metadata and simpler vector scheduler; retain.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076381312,&quot;completed_at&quot;:1785076435302,&quot;elapsed_seconds&quot;:5138.6},{&quot;candidate_index&quot;:46,&quot;id&quot;:&quot;cand_ccae560222b6&quot;,&quot;parent_id&quot;:&quot;cand_b5369089ee01&quot;,&quot;commit_sha&quot;:&quot;a5378f533756b031e87af665201b4fd9a5875935&quot;,&quot;cycles&quot;:1502,&quot;score&quot;:98.358189,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:98.358,&quot;hypothesis&quot;:&quot;Even-group-first scheduling will interleave memory addresses across two group cohorts and improve engine packing over strictly contiguous group priority.&quot;,&quot;eval_summary&quot;:&quot;Even-first group ordering passed correctness and tied 1502 cycles.&quot;,&quot;decision_reason&quot;:&quot;No gain and adds scheduler-key complexity; retain parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076457956,&quot;completed_at&quot;:1785076498700,&quot;elapsed_seconds&quot;:5202.0},{&quot;candidate_index&quot;:47,&quot;id&quot;:&quot;cand_a8463e275e9a&quot;,&quot;parent_id&quot;:&quot;cand_b5369089ee01&quot;,&quot;commit_sha&quot;:&quot;2360aa5ddc56e8a1c8ca84aa97eadd05b04f873c&quot;,&quot;cycles&quot;:1502,&quot;score&quot;:98.358189,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:18,&quot;mcts_value_sum&quot;:1793.167,&quot;hypothesis&quot;:&quot;Using the scalar forest base directly in each lane address will remove an initialization broadcast and reduce fixed cycles/scratch without affecting gather addresses.&quot;,&quot;eval_summary&quot;:&quot;Scalar forest-base gathers passed correctness and tied 1502 cycles.&quot;,&quot;decision_reason&quot;:&quot;Equal score with one fewer vector broadcast and eight fewer scratch cells; retain simpler form.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076510886,&quot;completed_at&quot;:1785076553289,&quot;elapsed_seconds&quot;:5256.6},{&quot;candidate_index&quot;:48,&quot;id&quot;:&quot;cand_5706abdcef0d&quot;,&quot;parent_id&quot;:&quot;cand_a8463e275e9a&quot;,&quot;commit_sha&quot;:&quot;c8f29d587d97c309b6223b64465bda1a5ce5f03a&quot;,&quot;cycles&quot;:1502,&quot;score&quot;:98.358189,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:98.358,&quot;hypothesis&quot;:&quot;Prioritizing ready load tasks immediately after load-unlockers will keep the profiled load engine saturated and reduce gather stalls.&quot;,&quot;eval_summary&quot;:&quot;Ready-load priority passed correctness and tied 1502 cycles.&quot;,&quot;decision_reason&quot;:&quot;No gain and adds scheduler heuristic complexity; retain parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076570131,&quot;completed_at&quot;:1785076602984,&quot;elapsed_seconds&quot;:5306.3},{&quot;candidate_index&quot;:49,&quot;id&quot;:&quot;cand_bedbdea12c0f&quot;,&quot;parent_id&quot;:&quot;cand_a8463e275e9a&quot;,&quot;commit_sha&quot;:&quot;a0cc20c3f0c38fb249201ce42da7f3ec8278bc2d&quot;,&quot;cycles&quot;:1502,&quot;score&quot;:98.358189,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:98.358,&quot;hypothesis&quot;:&quot;Prioritizing ready VALU tasks after load-unlockers will keep the profiled high-utilization VALU engine saturated and shorten the hash wavefront.&quot;,&quot;eval_summary&quot;:&quot;Ready-VALU priority passed correctness and tied 1502 cycles.&quot;,&quot;decision_reason&quot;:&quot;No gain and adds scheduler complexity; retain parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076610966,&quot;completed_at&quot;:1785076652275,&quot;elapsed_seconds&quot;:5355.6},{&quot;candidate_index&quot;:50,&quot;id&quot;:&quot;cand_44faf7327c4b&quot;,&quot;parent_id&quot;:&quot;cand_a8463e275e9a&quot;,&quot;commit_sha&quot;:&quot;e9577add43addfe564c24a60968c84e7da5cb899&quot;,&quot;cycles&quot;:1500,&quot;score&quot;:98.489333,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:15,&quot;mcts_value_sum&quot;:1498.093,&quot;hypothesis&quot;:&quot;Packing build-time dimension constant loads two per bundle will remove two fixed initialization cycles.&quot;,&quot;eval_summary&quot;:&quot;Bundled dimension constants passed correctness and improved from 1502 to 1500 cycles.&quot;,&quot;decision_reason&quot;:&quot;Exact two-cycle fixed-cost reduction while preserving duplicate-value correctness; retain new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076663566,&quot;completed_at&quot;:1785076778277,&quot;elapsed_seconds&quot;:5481.6},{&quot;candidate_index&quot;:51,&quot;id&quot;:&quot;cand_5d5afb5d23cf&quot;,&quot;parent_id&quot;:&quot;cand_44faf7327c4b&quot;,&quot;commit_sha&quot;:&quot;ce1c3e9d20cdffbc99a693939332693b0581956d&quot;,&quot;cycles&quot;:1499,&quot;score&quot;:98.555037,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:14,&quot;mcts_value_sum&quot;:1399.603,&quot;hypothesis&quot;:&quot;Integrating forest/scalar constants with dimension load bundles and overlapping pointer derivation will remove one more initialization cycle.&quot;,&quot;eval_summary&quot;:&quot;Overlapped scalar initialization passed correctness and improved from 1500 to 1499 cycles.&quot;,&quot;decision_reason&quot;:&quot;One-cycle gain with legal full load bundles and preserved alias semantics; retain new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076796930,&quot;completed_at&quot;:1785076913332,&quot;elapsed_seconds&quot;:5616.6},{&quot;candidate_index&quot;:52,&quot;id&quot;:&quot;cand_9ff48f943ed6&quot;,&quot;parent_id&quot;:&quot;cand_5d5afb5d23cf&quot;,&quot;commit_sha&quot;:&quot;f74649efe724e2cebbae0012016c6c9f6d0c0af6&quot;,&quot;cycles&quot;:1499,&quot;score&quot;:98.555037,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:13,&quot;mcts_value_sum&quot;:1301.048,&quot;hypothesis&quot;:&quot;Omitting unused runtime constants for rounds and forest_height will reduce scalar initialization from four bundles to three.&quot;,&quot;eval_summary&quot;:&quot;Removing unused rounds/height constants passed correctness and tied 1499 cycles.&quot;,&quot;decision_reason&quot;:&quot;Equal score with dead scratch/constants removed and simpler initialization; retain.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785076926428,&quot;completed_at&quot;:1785076982608,&quot;elapsed_seconds&quot;:5685.9},{&quot;candidate_index&quot;:53,&quot;id&quot;:&quot;cand_7b3f3c5fdbfd&quot;,&quot;parent_id&quot;:&quot;cand_9ff48f943ed6&quot;,&quot;commit_sha&quot;:&quot;99252dd73c3c1fa851cd917cefbabfbaa6f391f2&quot;,&quot;cycles&quot;:1499,&quot;score&quot;:98.555037,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:12,&quot;mcts_value_sum&quot;:1202.493,&quot;hypothesis&quot;:&quot;Loading absolute build-time input pointers will remove both pointer-derivation ALUs and reduce fixed initialization contention.&quot;,&quot;eval_summary&quot;:&quot;Absolute pointer constants passed correctness and tied 1499 cycles.&quot;,&quot;decision_reason&quot;:&quot;Equal score with two fewer ALU instructions and conditional remainder state; retain simpler fixed-layout form.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785077006080,&quot;completed_at&quot;:1785077102769,&quot;elapsed_seconds&quot;:5806.1},{&quot;candidate_index&quot;:54,&quot;id&quot;:&quot;cand_598922ce0cc3&quot;,&quot;parent_id&quot;:&quot;cand_7b3f3c5fdbfd&quot;,&quot;commit_sha&quot;:&quot;d88d9f3076e4307605f7565845e93c3eed9fd87b&quot;,&quot;cycles&quot;:1484,&quot;score&quot;:99.551213,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:11,&quot;mcts_value_sum&quot;:1103.938,&quot;hypothesis&quot;:&quot;Batching per-group offset constants two per load bundle will remove up to sixteen fixed cycles from the canonical 32-group chunk.&quot;,&quot;eval_summary&quot;:&quot;Bundled group offsets passed correctness and improved from 1499 to 1484 cycles.&quot;,&quot;decision_reason&quot;:&quot;Fifteen-cycle fixed-cost gain using legal load packing with preserved multi-chunk behavior; retain new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785077132271,&quot;completed_at&quot;:1785077213497,&quot;elapsed_seconds&quot;:5916.8},{&quot;candidate_index&quot;:55,&quot;id&quot;:&quot;cand_cfd236cc3066&quot;,&quot;parent_id&quot;:&quot;cand_598922ce0cc3&quot;,&quot;commit_sha&quot;:&quot;062c092d9dcbc0a3e22c42152400303629ca0ebd&quot;,&quot;cycles&quot;:1469,&quot;score&quot;:100.567733,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:10,&quot;mcts_value_sum&quot;:1004.387,&quot;hypothesis&quot;:&quot;Scheduling group-offset constant loads inside the vector DAG will overlap them with pointer/value startup and reduce the 16-bundle offset prologue.&quot;,&quot;eval_summary&quot;:&quot;DAG-scheduled group offsets passed correctness and improved from 1484 to 1469 cycles.&quot;,&quot;decision_reason&quot;:&quot;Fifteen-cycle gain by hiding constant loads behind vector startup with exact dependencies; retain new best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785077229111,&quot;completed_at&quot;:1785077311204,&quot;elapsed_seconds&quot;:6014.5},{&quot;candidate_index&quot;:56,&quot;id&quot;:&quot;cand_17f5d6a58a0b&quot;,&quot;parent_id&quot;:&quot;cand_cfd236cc3066&quot;,&quot;commit_sha&quot;:&quot;defbd13a4f6f7c6a18a1b32695ac0c8c407553ed&quot;,&quot;cycles&quot;:1470,&quot;score&quot;:100.49932,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.499,&quot;hypothesis&quot;:&quot;Using an absolute index-address constant per group and deriving only values_addr will halve group pointer ALU work without increasing per-group constant loads.&quot;,&quot;eval_summary&quot;:&quot;Absolute group index addresses passed correctness but regressed from 1469 to 1470 cycles.&quot;,&quot;decision_reason&quot;:&quot;Added batch constant/dependency outweighs saved pointer ALU; retain parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785077340114,&quot;completed_at&quot;:1785077431837,&quot;elapsed_seconds&quot;:6135.1},{&quot;candidate_index&quot;:57,&quot;id&quot;:&quot;cand_97f12b638d7e&quot;,&quot;parent_id&quot;:&quot;cand_cfd236cc3066&quot;,&quot;commit_sha&quot;:&quot;743c65a18db310e3cfff06a0823a89ca83500942&quot;,&quot;cycles&quot;:1469,&quot;score&quot;:100.567733,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:8,&quot;mcts_value_sum&quot;:803.32,&quot;hypothesis&quot;:&quot;Removing remaining scalar-path debug instructions will simplify generated remainder programs without affecting submission computation or canonical score.&quot;,&quot;eval_summary&quot;:&quot;Removing scalar debug comparisons passed correctness and tied 1469 cycles.&quot;,&quot;decision_reason&quot;:&quot;Equal canonical score with simpler, faster remainder programs and no submission-relevant loss; retain.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785077458758,&quot;completed_at&quot;:1785077519144,&quot;elapsed_seconds&quot;:6222.4},{&quot;candidate_index&quot;:58,&quot;id&quot;:&quot;cand_b9ec719a8a6e&quot;,&quot;parent_id&quot;:&quot;cand_97f12b638d7e&quot;,&quot;commit_sha&quot;:&quot;426775e4b03a61410b5a0ce8118cfa61c47cbd31&quot;,&quot;cycles&quot;:1470,&quot;score&quot;:100.49932,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.499,&quot;hypothesis&quot;:&quot;Generating group offsets as an ALU increment chain will trade 30 load tasks for spare ALU capacity and reduce pressure on the profiled load engine.&quot;,&quot;eval_summary&quot;:&quot;Incremental offset chain passed correctness but regressed from 1469 to 1470 cycles.&quot;,&quot;decision_reason&quot;:&quot;Serial ALU chain costs one cycle more than parallel load tasks; retain parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785077547038,&quot;completed_at&quot;:1785077640092,&quot;elapsed_seconds&quot;:6343.4},{&quot;candidate_index&quot;:59,&quot;id&quot;:&quot;cand_13945fba0866&quot;,&quot;parent_id&quot;:&quot;cand_97f12b638d7e&quot;,&quot;commit_sha&quot;:&quot;fe0fb778ece67c189d4ba52abb90d3b22369ff18&quot;,&quot;cycles&quot;:1484,&quot;score&quot;:99.551213,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:99.551,&quot;hypothesis&quot;:&quot;A pairwise offset scheme will halve offset loads without the long dependency chain that caused the full incremental scheme&#x27;s one-cycle regression.&quot;,&quot;eval_summary&quot;:&quot;Pairwise offset derivation passed correctness but regressed from 1469 to 1484 cycles.&quot;,&quot;decision_reason&quot;:&quot;Added ALU dependencies prevent the load latency from being hidden; retain all-load DAG parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785077649660,&quot;completed_at&quot;:1785077774309,&quot;elapsed_seconds&quot;:6477.6},{&quot;candidate_index&quot;:60,&quot;id&quot;:&quot;cand_8f9cb7e3bc8c&quot;,&quot;parent_id&quot;:&quot;cand_97f12b638d7e&quot;,&quot;commit_sha&quot;:&quot;ab62755a7538fb1d97d79b24b6ff60a49df62357&quot;,&quot;cycles&quot;:1470,&quot;score&quot;:100.49932,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.499,&quot;hypothesis&quot;:&quot;After offset loads moved into the DAG, deferring indices_addr calculation to final stores may reduce startup ALU contention enough to outperform its earlier one-cycle regression.&quot;,&quot;eval_summary&quot;:&quot;Deferred index pointers passed correctness but again regressed from 1469 to 1470 cycles.&quot;,&quot;decision_reason&quot;:&quot;Tail dependency consistently costs one cycle; retain parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785077798981,&quot;completed_at&quot;:1785077847821,&quot;elapsed_seconds&quot;:6551.1},{&quot;candidate_index&quot;:61,&quot;id&quot;:&quot;cand_f4d292b14d6c&quot;,&quot;parent_id&quot;:&quot;cand_97f12b638d7e&quot;,&quot;commit_sha&quot;:&quot;de314ba03dab8cfb61fe797e206d557e36de313e&quot;,&quot;cycles&quot;:1469,&quot;score&quot;:100.567733,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.568,&quot;hypothesis&quot;:&quot;With offset constants now represented as DAG load tasks, explicit ready-load priority may improve their overlap with initial value loads.&quot;,&quot;eval_summary&quot;:&quot;Ready-load priority on offset DAG passed correctness and tied 1469 cycles.&quot;,&quot;decision_reason&quot;:&quot;No score gain and adds heuristic complexity; retain parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785077858483,&quot;completed_at&quot;:1785077889568,&quot;elapsed_seconds&quot;:6592.9},{&quot;candidate_index&quot;:62,&quot;id&quot;:&quot;cand_809aa0b3cf7d&quot;,&quot;parent_id&quot;:&quot;cand_97f12b638d7e&quot;,&quot;commit_sha&quot;:&quot;dbecab1cf03f7c6ec22587c177d921742e5490ec&quot;,&quot;cycles&quot;:1469,&quot;score&quot;:100.567733,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.568,&quot;hypothesis&quot;:&quot;On the offset-DAG lineage, ready VALU priority may preserve hash saturation while offset loads naturally fill independent load slots.&quot;,&quot;eval_summary&quot;:&quot;VALU priority on offset DAG passed correctness and tied 1469 cycles.&quot;,&quot;decision_reason&quot;:&quot;No gain and adds heuristic complexity; retain parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785077901358,&quot;completed_at&quot;:1785077955236,&quot;elapsed_seconds&quot;:6658.5},{&quot;candidate_index&quot;:63,&quot;id&quot;:&quot;cand_c46aee3a6538&quot;,&quot;parent_id&quot;:&quot;cand_97f12b638d7e&quot;,&quot;commit_sha&quot;:&quot;f5a19647a2471115c512a6fce85468f73bc3ed88&quot;,&quot;cycles&quot;:1470,&quot;score&quot;:100.49932,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.499,&quot;hypothesis&quot;:&quot;Reverse group priority may pipeline newly DAG-scheduled offset loads differently and reduce startup tail latency.&quot;,&quot;eval_summary&quot;:&quot;Reverse group priority passed correctness but regressed from 1469 to 1470 cycles.&quot;,&quot;decision_reason&quot;:&quot;Ascending group locality remains one cycle better; retain parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785077962725,&quot;completed_at&quot;:1785077999948,&quot;elapsed_seconds&quot;:6703.3},{&quot;candidate_index&quot;:64,&quot;id&quot;:&quot;cand_6d2f4caab9e7&quot;,&quot;parent_id&quot;:&quot;cand_97f12b638d7e&quot;,&quot;commit_sha&quot;:&quot;3255631ba2b73464b9b938518640e97aebb35673&quot;,&quot;cycles&quot;:1469,&quot;score&quot;:100.567733,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.568,&quot;hypothesis&quot;:&quot;Even-group-first ordering may interleave offset/value-load cohorts while preserving ascending locality within each cohort.&quot;,&quot;eval_summary&quot;:&quot;Even-first group ordering passed correctness and tied 1469 cycles.&quot;,&quot;decision_reason&quot;:&quot;No score gain and adds ordering complexity; retain ascending parent.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785078011329,&quot;completed_at&quot;:1785078049963,&quot;elapsed_seconds&quot;:6753.3}]&lt;/script&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+  #mcts-zsmn9qzt {
+    color: var(--foreground);
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  #mcts-zsmn9qzt-detail {
+    background: color-mix(in srgb, var(--background) 88%, transparent);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  #mcts-zsmn9qzt .mcts-copy {
+    margin-top: 0.5rem;
+  }
+
+  #mcts-zsmn9qzt .mcts-stage {
+    position: relative;
+    width: 100%;
+  }
+
+  #mcts-zsmn9qzt svg {
+    display: block;
+    height: auto;
+    overflow: visible;
+    width: 100%;
+  }
+
+  #mcts-zsmn9qzt .mcts-grid {
+    stroke: var(--border);
+    stroke-width: 1;
+  }
+
+  #mcts-zsmn9qzt .mcts-edge {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 1;
+  }
+
+  #mcts-zsmn9qzt .mcts-edge.is-path {
+    stroke: var(--viz-series-1);
+    stroke-width: 2;
+  }
+
+  #mcts-zsmn9qzt .mcts-node circle {
+    fill: var(--muted);
+    stroke: var(--muted-foreground);
+    stroke-width: 1;
+  }
+
+  #mcts-zsmn9qzt .mcts-node.is-keep circle {
+    fill: color-mix(in srgb, var(--viz-series-3) 34%, transparent);
+    stroke: var(--viz-series-3);
+  }
+
+  #mcts-zsmn9qzt .mcts-node.is-failed circle {
+    fill: color-mix(in srgb, var(--destructive) 48%, transparent);
+    stroke: var(--destructive);
+    stroke-width: 2;
+  }
+
+  #mcts-zsmn9qzt .mcts-failure-mark {
+    pointer-events: none;
+    stroke: var(--destructive);
+    stroke-width: 1.5;
+  }
+
+  #mcts-zsmn9qzt .mcts-node.is-path circle {
+    fill: color-mix(in srgb, var(--viz-series-1) 30%, transparent);
+    stroke: var(--viz-series-1);
+    stroke-width: 2;
+  }
+
+  #mcts-zsmn9qzt .mcts-node.is-winner circle {
+    fill: var(--viz-series-1);
+    stroke: var(--background);
+    stroke-width: 2;
+  }
+
+  #mcts-zsmn9qzt .mcts-node.is-selected circle {
+    stroke: var(--ring);
+    stroke-width: 3;
+  }
+
+  #mcts-zsmn9qzt .mcts-node:hover circle {
+    stroke: var(--foreground);
+  }
+
+  #mcts-zsmn9qzt .mcts-axis-label,
+  #mcts-zsmn9qzt .mcts-annotation {
+    fill: var(--muted-foreground);
+  }
+
+  #mcts-zsmn9qzt .mcts-annotation.is-winner {
+    fill: var(--foreground);
+    font-weight: 500;
+  }
+
+  #mcts-zsmn9qzt .mcts-legend {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.35rem;
+  }
+
+  #mcts-zsmn9qzt .mcts-key {
+    border-radius: 50%;
+    display: inline-block;
+    height: 0.65rem;
+    width: 0.65rem;
+  }
+
+  #mcts-zsmn9qzt .mcts-key-path {
+    background: var(--viz-series-1);
+  }
+
+  #mcts-zsmn9qzt .mcts-key-keep {
+    background: color-mix(in srgb, var(--viz-series-3) 45%, transparent);
+    border: 1px solid var(--viz-series-3);
+  }
+
+  #mcts-zsmn9qzt .mcts-key-discard {
+    background: var(--muted);
+    border: 1px solid var(--muted-foreground);
+  }
+
+  #mcts-zsmn9qzt .mcts-key-failed {
+    background: color-mix(in srgb, var(--destructive) 55%, transparent);
+    border: 2px solid var(--destructive);
+    border-radius: 0.15rem;
+  }
+
+  #mcts-zsmn9qzt .tooltip {
+    max-width: min(22rem, 80%);
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  #mcts-zsmn9qzt .tooltip.is-visible {
+    opacity: 1;
+  }
+&lt;/style&gt;
+
+&lt;script&gt;
+  (() =&gt; {
+    const root = document.getElementById(&quot;mcts-zsmn9qzt&quot;);
+    const svg = root.querySelector(&quot;#mcts-zsmn9qzt-svg&quot;);
+    const tooltip = root.querySelector(&quot;#mcts-zsmn9qzt-tooltip&quot;);
+    const nodes = JSON.parse(root.querySelector(&quot;#mcts-zsmn9qzt-data&quot;).textContent);
+    const byId = new Map(nodes.map((node) =&gt; [node.id, node]));
+    const children = new Map(nodes.map((node) =&gt; [node.id, []]));
+    nodes.forEach((node) =&gt; {
+      if (node.parent_id &amp;&amp; children.has(node.parent_id)) children.get(node.parent_id).push(node);
+    });
+    children.forEach((items) =&gt; items.sort((a, b) =&gt; a.candidate_index - b.candidate_index));
+
+    const treeRoot = nodes.find((node) =&gt; !node.parent_id);
+    let leafIndex = 0;
+    let maxDepth = 0;
+    function assignTreePosition(node, depth) {
+      node.depth = depth;
+      maxDepth = Math.max(maxDepth, depth);
+      const descendants = children.get(node.id);
+      if (!descendants.length) {
+        node.leaf = leafIndex++;
+        return node.leaf;
+      }
+      const positions = descendants.map((child) =&gt; assignTreePosition(child, depth + 1));
+      node.leaf = positions.reduce((sum, value) =&gt; sum + value, 0) / positions.length;
+      return node.leaf;
+    }
+    assignTreePosition(treeRoot, 0);
+
+    const width = 720;
+    const height = Math.max(540, leafIndex * 21 + 64);
+    const left = 34;
+    const right = 24;
+    const top = 42;
+    const bottom = 24;
+    const plotWidth = width - left - right;
+    const plotHeight = height - top - bottom;
+    nodes.forEach((node) =&gt; {
+      node.x = left + (node.depth / Math.max(1, maxDepth)) * plotWidth;
+      node.y = top + (node.leaf / Math.max(1, leafIndex - 1)) * plotHeight;
+    });
+    svg.setAttribute(&quot;viewBox&quot;, `0 0 ${width} ${height}`);
+
+    const ns = &quot;http://www.w3.org/2000/svg&quot;;
+    const make = (name, attributes = {}) =&gt; {
+      const element = document.createElementNS(ns, name);
+      Object.entries(attributes).forEach(([key, value]) =&gt; element.setAttribute(key, value));
+      return element;
+    };
+    const title = make(&quot;title&quot;, { id: &quot;mcts-zsmn9qzt-title&quot; });
+    title.textContent = &quot;SPAR P=1 zsmn9qzt candidate tree&quot;;
+    const desc = make(&quot;desc&quot;, { id: &quot;mcts-zsmn9qzt-desc&quot; });
+    desc.textContent = &quot;A 64-candidate SPAR P=1 tree for zsmn9qzt, from the 147,734-cycle baseline to 1,469 cycles. Select a node for its hypothesis, outcome, lineage, visits, and elapsed time.&quot;;
+    svg.append(title, desc);
+
+    const depthStep = maxDepth &gt; 60 ? 10 : 5;
+    for (let depth = 0; depth &lt;= maxDepth; depth += depthStep) {
+      const x = left + (depth / Math.max(1, maxDepth)) * plotWidth;
+      svg.appendChild(make(&quot;line&quot;, { x1: x, x2: x, y1: top - 10, y2: height - bottom, class: &quot;mcts-grid&quot; }));
+      const label = make(&quot;text&quot;, { x, y: 30, &quot;text-anchor&quot;: &quot;middle&quot;, class: &quot;mcts-axis-label text-small&quot; });
+      label.textContent = depth;
+      svg.appendChild(label);
+    }
+    const depthLabel = make(&quot;text&quot;, { x: left, y: 14, class: &quot;mcts-axis-label text-small&quot; });
+    depthLabel.textContent = &quot;MCTS depth&quot;;
+    svg.appendChild(depthLabel);
+
+    const edgeLayer = make(&quot;g&quot;, { &quot;aria-hidden&quot;: &quot;true&quot; });
+    const nodeLayer = make(&quot;g&quot;);
+    svg.append(edgeLayer, nodeLayer);
+    const edgeByChild = new Map();
+    nodes.forEach((node) =&gt; {
+      if (!node.parent_id) return;
+      const parent = byId.get(node.parent_id);
+      const middle = (parent.x + node.x) / 2;
+      const path = make(&quot;path&quot;, {
+        d: `M ${parent.x} ${parent.y} C ${middle} ${parent.y}, ${middle} ${node.y}, ${node.x} ${node.y}`,
+        class: &quot;mcts-edge&quot;,
+      });
+      edgeLayer.appendChild(path);
+      edgeByChild.set(node.id, path);
+    });
+
+    const winner = nodes.reduce((best, node) =&gt; {
+      if (node.cycles == null) return best;
+      return !best || node.cycles &lt; best.cycles ? node : best;
+    }, null);
+    const linkById = new Map();
+    const radius = (node) =&gt; 3 + Math.min(3, Math.sqrt(Math.max(1, node.mcts_visits)) / 3);
+    nodes.forEach((node) =&gt; {
+      const link = make(&quot;a&quot;, {
+        href: &quot;#mcts-zsmn9qzt-detail&quot;,
+        class: `mcts-node ${node.decision === &quot;keep&quot; ? &quot;is-keep&quot; : &quot;&quot;} ${node.cycles == null ? &quot;is-failed&quot; : &quot;&quot;} ${node.id === winner.id ? &quot;is-winner&quot; : &quot;&quot;}`,
+        &quot;data-id&quot;: node.id,
+        &quot;aria-label&quot;: `Candidate ${node.candidate_index}, ${node.cycles == null ? &quot;failed&quot; : `${node.cycles.toLocaleString()} cycles`}, ${node.decision || node.status}`,
+      });
+      const nodeRadius = radius(node);
+      link.appendChild(make(&quot;circle&quot;, { cx: node.x, cy: node.y, r: nodeRadius }));
+      if (node.cycles == null) {
+        const markRadius = nodeRadius * 0.55;
+        link.appendChild(make(&quot;line&quot;, {
+          x1: node.x - markRadius,
+          y1: node.y - markRadius,
+          x2: node.x + markRadius,
+          y2: node.y + markRadius,
+          class: &quot;mcts-failure-mark&quot;,
+        }));
+        link.appendChild(make(&quot;line&quot;, {
+          x1: node.x + markRadius,
+          y1: node.y - markRadius,
+          x2: node.x - markRadius,
+          y2: node.y + markRadius,
+          class: &quot;mcts-failure-mark&quot;,
+        }));
+      }
+      nodeLayer.appendChild(link);
+      linkById.set(node.id, link);
+
+      link.addEventListener(&quot;click&quot;, (event) =&gt; {
+        event.preventDefault();
+        selectNode(node);
+      });
+      link.addEventListener(&quot;mouseenter&quot;, () =&gt; showTooltip(node, link));
+      link.addEventListener(&quot;mouseleave&quot;, hideTooltip);
+      link.addEventListener(&quot;focus&quot;, () =&gt; showTooltip(node, link));
+      link.addEventListener(&quot;blur&quot;, hideTooltip);
+    });
+
+    const firstAtOrBelow = (threshold) =&gt;
+      nodes.find((node) =&gt; node.cycles != null &amp;&amp; node.cycles &lt;= threshold);
+    const annotationNodes = [
+      treeRoot,
+      firstAtOrBelow(10000),
+      firstAtOrBelow(2000),
+      firstAtOrBelow(1500),
+      winner,
+    ].filter((node, index, items) =&gt; node &amp;&amp; items.findIndex((item) =&gt; item.id === node.id) === index);
+    const annotationIds = new Map(annotationNodes.map((node, index) =&gt; [
+      node.id,
+      {
+        text: `C${node.candidate_index} · ${node.cycles.toLocaleString()}`,
+        dx: 7,
+        dy: index % 2 === 0 ? -10 : 16,
+      },
+    ]));
+    annotationIds.forEach((annotation, id) =&gt; {
+      const node = byId.get(id);
+      if (!node) return;
+      const nearRightEdge = node.x &gt; width - 100;
+      const label = make(&quot;text&quot;, {
+        x: node.x + (nearRightEdge ? -7 : annotation.dx),
+        y: node.y + annotation.dy,
+        &quot;text-anchor&quot;: nearRightEdge ? &quot;end&quot; : &quot;start&quot;,
+        class: `mcts-annotation text-small ${id === winner.id ? &quot;is-winner&quot; : &quot;&quot;}`,
+      });
+      label.textContent = annotation.text;
+      svg.appendChild(label);
+    });
+
+    function formatElapsed(totalSeconds) {
+      if (totalSeconds == null) return &quot;time unavailable&quot;;
+      const seconds = Math.round(totalSeconds);
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remainder = seconds % 60;
+      return `${hours}h ${String(minutes).padStart(2, &quot;0&quot;)}m ${String(remainder).padStart(2, &quot;0&quot;)}s`;
+    }
+
+    function selectedLineage(node) {
+      const ids = new Set();
+      let current = node;
+      while (current) {
+        ids.add(current.id);
+        current = current.parent_id ? byId.get(current.parent_id) : null;
+      }
+      return ids;
+    }
+
+    function selectNode(node) {
+      const lineage = selectedLineage(node);
+      linkById.forEach((link, id) =&gt; {
+        link.classList.toggle(&quot;is-path&quot;, lineage.has(id));
+        link.classList.toggle(&quot;is-selected&quot;, id === node.id);
+      });
+      edgeByChild.forEach((edge, id) =&gt; edge.classList.toggle(&quot;is-path&quot;, lineage.has(id)));
+
+      const parent = node.parent_id ? byId.get(node.parent_id) : null;
+      const delta = parent &amp;&amp; node.cycles != null &amp;&amp; parent.cycles != null ? node.cycles - parent.cycles : null;
+      root.querySelector(&quot;#mcts-zsmn9qzt-candidate-index&quot;).textContent = `C${node.candidate_index}`;
+      root.querySelector(&quot;#mcts-zsmn9qzt-candidate-id&quot;).textContent = node.id;
+      root.querySelector(&quot;#mcts-zsmn9qzt-cycles&quot;).textContent = node.cycles == null ? &quot;No valid cycle result&quot; : `${node.cycles.toLocaleString()} cycles`;
+      root.querySelector(&quot;#mcts-zsmn9qzt-parent-delta&quot;).textContent = delta == null ? &quot;root&quot; : delta &lt; 0 ? `${Math.abs(delta).toLocaleString()} fewer than parent` : delta &gt; 0 ? `${delta.toLocaleString()} more than parent` : &quot;tied parent&quot;;
+      root.querySelector(&quot;#mcts-zsmn9qzt-decision&quot;).textContent = node.decision || node.status;
+      root.querySelector(&quot;#mcts-zsmn9qzt-visits&quot;).textContent = `${node.mcts_visits.toLocaleString()} MCTS visit${node.mcts_visits === 1 ? &quot;&quot; : &quot;s&quot;}`;
+      root.querySelector(&quot;#mcts-zsmn9qzt-elapsed&quot;).textContent = formatElapsed(node.elapsed_seconds);
+      root.querySelector(&quot;#mcts-zsmn9qzt-hypothesis&quot;).textContent = node.hypothesis;
+      root.querySelector(&quot;#mcts-zsmn9qzt-evaluation&quot;).textContent = node.error || node.eval_summary || &quot;No evaluation summary recorded.&quot;;
+      root.querySelector(&quot;#mcts-zsmn9qzt-decision-reason&quot;).textContent = node.decision_reason || &quot;No decision rationale recorded.&quot;;
+    }
+
+    function showTooltip(node, link) {
+      tooltip.textContent = `C${node.candidate_index} · ${node.cycles == null ? &quot;failed&quot; : `${node.cycles.toLocaleString()} cycles`} · ${formatElapsed(node.elapsed_seconds)} · Hypothesis: ${node.hypothesis}`;
+      tooltip.classList.add(&quot;is-visible&quot;);
+      const stageRect = root.querySelector(&quot;.mcts-stage&quot;).getBoundingClientRect();
+      const nodeRect = link.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      const centered = nodeRect.left - stageRect.left + nodeRect.width / 2 - tooltipRect.width / 2;
+      const leftPosition = Math.max(4, Math.min(centered, stageRect.width - tooltipRect.width - 4));
+      const above = nodeRect.top - stageRect.top - tooltipRect.height - 8;
+      const topPosition = above &gt;= 0 ? above : nodeRect.bottom - stageRect.top + 8;
+      tooltip.style.left = `${leftPosition}px`;
+      tooltip.style.top = `${topPosition}px`;
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove(&quot;is-visible&quot;);
+    }
+
+    selectNode(winner);
+  })();
+&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set([&quot;top&quot;, &quot;right&quot;, &quot;bottom&quot;, &quot;left&quot;]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+
+  const getTrigger = (target) =&gt;
+    target?.nodeType === Node.ELEMENT_NODE
+      ? target.closest(&quot;[data-tooltip]&quot;)
+      : null;
+  const containsTarget = (trigger, target) =&gt;
+    target?.nodeType != null &amp;&amp; trigger.contains(target);
+  const getContent = (trigger) =&gt;
+    trigger.getAttribute(&quot;data-tooltip&quot;)?.trim() ?? &quot;&quot;;
+  const getPlacement = (trigger) =&gt; {
+    const placement = trigger.getAttribute(&quot;data-tooltip-placement&quot;);
+    return tooltipPlacements.has(placement) ? placement : &quot;top&quot;;
+  };
+  const getTooltip = () =&gt; {
+    if (tooltip == null) {
+      tooltip = document.createElement(&quot;div&quot;);
+      tooltip.id = tooltipId;
+      tooltip.className = &quot;tooltip&quot;;
+      tooltip.setAttribute(&quot;role&quot;, &quot;tooltip&quot;);
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) =&gt; {
+    const ids = new Set(
+      (trigger.getAttribute(&quot;aria-describedby&quot;) ?? &quot;&quot;)
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute(&quot;aria-describedby&quot;);
+    } else {
+      trigger.setAttribute(&quot;aria-describedby&quot;, [...ids].join(&quot; &quot;));
+    }
+  };
+  const clearOpenTimeout = () =&gt; {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) =&gt; {
+    clearOpenTimeout();
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) =&gt; {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-width&quot;,
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-height&quot;,
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: &quot;fixed&quot;,
+    })
+      .then(({ x, y }) =&gt; {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = &quot;visible&quot;;
+      })
+      .catch(() =&gt; {
+        if (activeTrigger === trigger &amp;&amp; request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) =&gt; {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = &quot;hidden&quot;;
+    floating.style.transform = &quot;translate(0, 0)&quot;;
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () =&gt; {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) =&gt; {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() &lt; skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() =&gt; {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) =&gt; {
+    if (event.pointerType === &quot;touch&quot;) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handleLeave = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger?.matches(&quot;:focus-visible&quot;)) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) =&gt; {
+    if (event.key === &quot;Escape&quot;) {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const destroy = () =&gt; {
+    closeTooltip(false);
+    document.removeEventListener(&quot;pointerover&quot;, handlePointerOpen);
+    document.removeEventListener(&quot;pointerout&quot;, handleLeave);
+    document.removeEventListener(&quot;focusin&quot;, handleFocusIn);
+    document.removeEventListener(&quot;focusout&quot;, handleLeave);
+    document.removeEventListener(&quot;keydown&quot;, handleKeyDown);
+    document.removeEventListener(&quot;contextmenu&quot;, handleContextMenu);
+    tooltip = null;
+  };
+
+  document.addEventListener(&quot;pointerover&quot;, handlePointerOpen);
+  document.addEventListener(&quot;pointerout&quot;, handleLeave);
+  document.addEventListener(&quot;focusin&quot;, handleFocusIn);
+  document.addEventListener(&quot;focusout&quot;, handleLeave);
+  document.addEventListener(&quot;keydown&quot;, handleKeyDown);
+  document.addEventListener(&quot;contextmenu&quot;, handleContextMenu);
+  window.addEventListener(&quot;pagehide&quot;, destroy, { once: true });
+})();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-lucide&quot; async src=&quot;https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  const initialize = () =&gt; {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById(&quot;codex-visualization-lucide&quot;)
+    ?.addEventListener(&quot;load&quot;, initialize, { once: true });
+})();
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+</body>
+</html>

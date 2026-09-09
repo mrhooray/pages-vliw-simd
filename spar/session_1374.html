@@ -1,0 +1,1460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>MCTS 1374</title>
+<style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:75%;max-width:none;height:calc(100vh - 2rem);margin:0 auto;border:0}@media(max-width:980px){iframe{width:100%}}</style>
+</head>
+<body>
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="MCTS 1374" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
+&lt;title&gt;MCTS 1374&lt;/title&gt;
+&lt;style&gt;:root {
+  color-scheme: light dark;
+  background-color: var(--background) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: light-dark(rgb(255 255 255), rgb(24 24 24));
+  --foreground: light-dark(rgb(26 28 31), rgb(255 255 255));
+  --card: color-mix(in oklab, var(--foreground) 5%, transparent);
+  --card-foreground: var(--foreground);
+  --popover: light-dark(rgb(255 255 255), rgb(45 45 45));
+  --popover-foreground: var(--foreground);
+  --primary: light-dark(rgb(51 156 255), rgb(131 195 255));
+  --primary-foreground: light-dark(rgb(255 255 255), rgb(13 13 13));
+  --secondary: light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%));
+  --secondary-foreground: var(--foreground);
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: light-dark(
+    rgb(26 28 31 / 49.4%),
+    rgb(255 255 255 / 49.8%)
+  );
+  --accent: light-dark(rgb(229 242 255), rgb(13 39 63));
+  --accent-foreground: var(--primary);
+  --destructive: light-dark(rgb(226 85 7), rgb(255 133 73));
+  --border: light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%));
+  --input: light-dark(
+    rgb(26 28 31 / 11.8%),
+    color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+  );
+  --ring: light-dark(rgb(51 156 255), rgb(131 195 255 / 76%));
+  --font-size-base: 14px;
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, &quot;Segoe UI&quot;, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, &quot;Liberation Mono&quot;,
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --radius: 12.5px;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url(&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 17 17&#x27;%3E%3Cpath d=&#x27;M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z&#x27;/%3E%3C/svg%3E&quot;);
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+  --color-background-primary: var(--background);
+  --color-text-primary: var(--foreground);
+  --color-border-secondary: var(--border);
+}
+
+:root[data-theme=&quot;light&quot;] {
+  color-scheme: light;
+}
+
+:root[data-theme=&quot;dark&quot;] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html &gt; body {
+  margin: 0;
+  padding: 5px;
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--viz-font-weight-medium);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive &gt; .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align=&quot;right&quot;]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align=&quot;center&quot;]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: superellipse(1.5);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget &gt; :not(.card) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls &gt; .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls &gt; .form-label &gt; :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type=&quot;file&quot;] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type=&quot;file&quot;]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type=&quot;file&quot;]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type=&quot;color&quot;] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: superellipse(1.5);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type=&quot;checkbox&quot;]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: &quot;&quot;;
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type=&quot;radio&quot;] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type=&quot;radio&quot;]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: &quot;&quot;;
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+    [aria-pressed=&quot;true&quot;],
+    [aria-selected=&quot;true&quot;],
+    .is-selected
+  ) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed=&quot;true&quot;], [aria-selected=&quot;true&quot;], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget &gt; svg {
+  width: 100%;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html&gt;body{padding:0}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;mcts-run-006&quot;&gt;
+  &lt;section class=&quot;card&quot; id=&quot;mcts-run-006-detail&quot; aria-live=&quot;polite&quot;&gt;
+    &lt;div class=&quot;viz-row&quot;&gt;
+      &lt;span class=&quot;viz-badge&quot; id=&quot;mcts-run-006-candidate-index&quot;&gt;&lt;/span&gt;
+      &lt;code id=&quot;mcts-run-006-candidate-id&quot;&gt;&lt;/code&gt;
+      &lt;strong id=&quot;mcts-run-006-cycles&quot;&gt;&lt;/strong&gt;
+      &lt;span class=&quot;text-muted&quot; id=&quot;mcts-run-006-parent-delta&quot;&gt;&lt;/span&gt;
+      &lt;span id=&quot;mcts-run-006-decision&quot;&gt;&lt;/span&gt;
+      &lt;span class=&quot;text-muted&quot; id=&quot;mcts-run-006-visits&quot;&gt;&lt;/span&gt;
+      &lt;span class=&quot;text-muted&quot; id=&quot;mcts-run-006-elapsed&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;mcts-copy&quot;&gt;&lt;span class=&quot;text-muted&quot;&gt;Hypothesis&lt;/span&gt; &lt;span id=&quot;mcts-run-006-hypothesis&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;text-small text-muted&quot; id=&quot;mcts-run-006-decision-reason&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;text-small text-muted&quot; id=&quot;mcts-run-006-evaluation&quot;&gt;&lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;div class=&quot;viz-row text-small&quot; aria-label=&quot;Tree legend&quot;&gt;
+    &lt;span class=&quot;mcts-legend&quot;&gt;&lt;span class=&quot;mcts-key mcts-key-path&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;Selected lineage&lt;/span&gt;
+    &lt;span class=&quot;mcts-legend&quot;&gt;&lt;span class=&quot;mcts-key mcts-key-keep&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;Kept&lt;/span&gt;
+    &lt;span class=&quot;mcts-legend&quot;&gt;&lt;span class=&quot;mcts-key mcts-key-discard&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;Discarded&lt;/span&gt;
+    &lt;span class=&quot;mcts-legend&quot;&gt;&lt;span class=&quot;mcts-key mcts-key-failed&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;Failed&lt;/span&gt;
+    &lt;span class=&quot;text-muted&quot;&gt;Larger node = more MCTS visits&lt;/span&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;mcts-stage&quot;&gt;
+    &lt;svg id=&quot;mcts-run-006-svg&quot; role=&quot;img&quot; aria-labelledby=&quot;mcts-run-006-title mcts-run-006-desc&quot;&gt;&lt;/svg&gt;
+    &lt;div class=&quot;tooltip&quot; id=&quot;mcts-run-006-tooltip&quot; role=&quot;status&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script type=&quot;application/json&quot; id=&quot;mcts-run-006-data&quot;&gt;[{&quot;candidate_index&quot;:1,&quot;id&quot;:&quot;root&quot;,&quot;parent_id&quot;:null,&quot;commit_sha&quot;:&quot;8b97a071665553bca864427031444cf8d6fe791a&quot;,&quot;cycles&quot;:147734,&quot;score&quot;:1.0,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:127,&quot;mcts_value_sum&quot;:11398.895,&quot;hypothesis&quot;:&quot;baseline&quot;,&quot;eval_summary&quot;:&quot;Canonical baseline measured.&quot;,&quot;decision_reason&quot;:&quot;The measured root is the baseline for candidate comparison.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785301909090,&quot;completed_at&quot;:1785301919662,&quot;elapsed_seconds&quot;:10.6},{&quot;candidate_index&quot;:2,&quot;id&quot;:&quot;cand_cef696749c2e&quot;,&quot;parent_id&quot;:&quot;root&quot;,&quot;commit_sha&quot;:&quot;393a6308cd76800543798e2541b7c72eec471444&quot;,&quot;cycles&quot;:123158,&quot;score&quot;:1.199549,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:126,&quot;mcts_value_sum&quot;:11397.895,&quot;hypothesis&quot;:&quot;Packing each hash stage\u2019s two independent ALU operations into one VLIW bundle will remove six cycles per item-round while preserving semantics.&quot;,&quot;eval_summary&quot;:&quot;Safe packing of independent hash ALU pairs saved the predicted six cycles per item-round; further gains require broader parallelism.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles fell from 147734 to 123158, improving score from 1.0 to 1.19955.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785301989834,&quot;completed_at&quot;:1785302039767,&quot;elapsed_seconds&quot;:130.7},{&quot;candidate_index&quot;:3,&quot;id&quot;:&quot;cand_409df4e1e8e5&quot;,&quot;parent_id&quot;:&quot;cand_cef696749c2e&quot;,&quot;commit_sha&quot;:&quot;5e063800552e4cca6f551a502d3ee2dcfbceae4f&quot;,&quot;cycles&quot;:92438,&quot;score&quot;:1.598196,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:125,&quot;mcts_value_sum&quot;:11396.696,&quot;hypothesis&quot;:&quot;Caching all 256 mutable indices and values in scratch across the 16 rounds will remove eight memory/address cycles per item-round, with only one preload and final writeback, reducing cycles from 123158 to roughly 92438.&quot;,&quot;eval_summary&quot;:&quot;Keeping mutable batch state in scratch eliminated repeated round-trip memory traffic and achieved the predicted 30720-cycle reduction.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 123158 to 92438, raising score from 1.19955 to 1.59820.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785302070996,&quot;completed_at&quot;:1785302117580,&quot;elapsed_seconds&quot;:208.5},{&quot;candidate_index&quot;:4,&quot;id&quot;:&quot;cand_8ceeede2343b&quot;,&quot;parent_id&quot;:&quot;cand_409df4e1e8e5&quot;,&quot;commit_sha&quot;:&quot;cb820c07badd55b2998d46a3cd3840af32379b92&quot;,&quot;cycles&quot;:14119,&quot;score&quot;:10.463489,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:124,&quot;mcts_value_sum&quot;:11395.097,&quot;hypothesis&quot;:&quot;Processing cached state in VLEN=8 blocks with VALU operations will amortize hash and branch work across eight items, reducing the 92438-cycle program to under 20000 cycles.&quot;,&quot;eval_summary&quot;:&quot;VLEN=8 processing successfully amortized traversal, hash, and branch work; remaining optimization should target scheduling and scalar transfer overhead.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 92438 to 14119, increasing score from 1.59820 to 10.46349.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785302152775,&quot;completed_at&quot;:1785302247298,&quot;elapsed_seconds&quot;:338.2},{&quot;candidate_index&quot;:5,&quot;id&quot;:&quot;cand_c9c790ff5f07&quot;,&quot;parent_id&quot;:&quot;cand_8ceeede2343b&quot;,&quot;commit_sha&quot;:&quot;a5801247ec94085f92e0e7a8958dbfef2b28fd83&quot;,&quot;cycles&quot;:11982,&quot;score&quot;:12.329661,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:123,&quot;mcts_value_sum&quot;:11384.634,&quot;hypothesis&quot;:&quot;Using paired vload/vstore bundles for the contiguous cached arrays will remove most scalar transfer and offset-constant overhead, reducing 14119 cycles to roughly 12000.&quot;,&quot;eval_summary&quot;:&quot;Paired vector transfers removed 2137 cycles of scalar preload/writeback overhead; the vector round body is now the primary target.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 14119 to 11982, raising score from 10.46349 to 12.32966.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785302283318,&quot;completed_at&quot;:1785302335908,&quot;elapsed_seconds&quot;:426.8},{&quot;candidate_index&quot;:6,&quot;id&quot;:&quot;cand_f78b82cf8887&quot;,&quot;parent_id&quot;:&quot;cand_c9c790ff5f07&quot;,&quot;commit_sha&quot;:&quot;27085495ac062df44faed97e486deb649ae8b00d&quot;,&quot;cycles&quot;:5070,&quot;score&quot;:29.138856,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:122,&quot;mcts_value_sum&quot;:11372.304,&quot;hypothesis&quot;:&quot;Batching 16 independent vector blocks into wavefront phases and filling each engine to SLOT_LIMITS will reduce the serialized vector body from 11776 cycles to about 4864, bringing total cycles near 5100.&quot;,&quot;eval_summary&quot;:&quot;Wavefront scheduling filled idle VLIW capacity and achieved the predicted 6912-cycle reduction; gather and flow throughput are the next constraints.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 11982 to 5070, raising score from 12.32966 to 29.13886.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785302373980,&quot;completed_at&quot;:1785302448305,&quot;elapsed_seconds&quot;:539.2},{&quot;candidate_index&quot;:7,&quot;id&quot;:&quot;cand_be80fc009bb5&quot;,&quot;parent_id&quot;:&quot;cand_f78b82cf8887&quot;,&quot;commit_sha&quot;:&quot;314acae930debd321777b7df2bbb1a14f2a7ecda&quot;,&quot;cycles&quot;:4468,&quot;score&quot;:33.064906,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:121,&quot;mcts_value_sum&quot;:11343.165,&quot;hypothesis&quot;:&quot;Using the perfect-tree depth invariant to reset all indices only after each forest_height+1 rounds will eliminate per-block bounds comparisons and vselects, reducing 5070 cycles to about 4468.&quot;,&quot;eval_summary&quot;:&quot;The perfect-tree depth invariant safely removed 602 cycles of redundant per-round bounds checks and flow selects.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 5070 to 4468, raising score from 29.13886 to 33.06491.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785302485133,&quot;completed_at&quot;:1785302526807,&quot;elapsed_seconds&quot;:617.7},{&quot;candidate_index&quot;:8,&quot;id&quot;:&quot;cand_d2c32c8e0841&quot;,&quot;parent_id&quot;:&quot;cand_be80fc009bb5&quot;,&quot;commit_sha&quot;:&quot;c3aa21c0f40d980b9f9f79ba2b39f9cf4d25663a&quot;,&quot;cycles&quot;:3896,&quot;score&quot;:37.919405,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:120,&quot;mcts_value_sum&quot;:11310.1,&quot;hypothesis&quot;:&quot;Fusing the three additive hash stages into VALU multiply_add operations will remove six wavefront cycles per fused stage and reduce 4468 cycles to about 3896.&quot;,&quot;eval_summary&quot;:&quot;Algebraic multiply_add fusion removed the predicted 572 net cycles from additive hash stages.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 4468 to 3896, raising score from 33.06491 to 37.91940.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785302554889,&quot;completed_at&quot;:1785302596339,&quot;elapsed_seconds&quot;:687.2},{&quot;candidate_index&quot;:9,&quot;id&quot;:&quot;cand_51a8a41df66a&quot;,&quot;parent_id&quot;:&quot;cand_d2c32c8e0841&quot;,&quot;commit_sha&quot;:&quot;380aab6eddee883f828bc4f1aee52ebfa17fc095&quot;,&quot;cycles&quot;:3630,&quot;score&quot;:40.698072,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:119,&quot;mcts_value_sum&quot;:11272.181,&quot;hypothesis&quot;:&quot;Caching the root node value and bypassing gathers on rounds that begin at depth zero will remove 266 cycles, reducing 3896 cycles to about 3630.&quot;,&quot;eval_summary&quot;:&quot;Caching the root eliminated the predicted 266 cycles of redundant root-round gathers.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 3896 to 3630, raising score from 37.91940 to 40.69807.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785302649345,&quot;completed_at&quot;:1785302694401,&quot;elapsed_seconds&quot;:785.3},{&quot;candidate_index&quot;:10,&quot;id&quot;:&quot;cand_5133072a2018&quot;,&quot;parent_id&quot;:&quot;cand_51a8a41df66a&quot;,&quot;commit_sha&quot;:&quot;09c6bbf9da71ba5c5c4947786af37f345501168c&quot;,&quot;cycles&quot;:2590,&quot;score&quot;:57.040154,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:118,&quot;mcts_value_sum&quot;:11231.483,&quot;hypothesis&quot;:&quot;Dependency-aware cross-engine scheduling of each wave will overlap gather loads with ready VALU work from other blocks, reducing 3630 cycles to roughly 2300.&quot;,&quot;eval_summary&quot;:&quot;DAG scheduling overlapped gather and VALU work, removing 1040 cycles; remaining gains likely require tighter scheduler priorities or fewer gathers.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 3630 to 2590, raising score from 40.69807 to 57.04015.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785302764246,&quot;completed_at&quot;:1785302861161,&quot;elapsed_seconds&quot;:952.1},{&quot;candidate_index&quot;:11,&quot;id&quot;:&quot;cand_36f63afb9ea9&quot;,&quot;parent_id&quot;:&quot;cand_5133072a2018&quot;,&quot;commit_sha&quot;:&quot;e30f2c7babc706bd18d97088276190fc27801afb&quot;,&quot;cycles&quot;:2387,&quot;score&quot;:61.891077,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:117,&quot;mcts_value_sum&quot;:11174.443,&quot;hypothesis&quot;:&quot;Aliasing node-address and hash tmp2 vectors will fit all 32 full-scale blocks in one wave, removing scheduler boundary bubbles and reducing 2590 cycles to roughly 2360.&quot;,&quot;eval_summary&quot;:&quot;Lifetime-based scratch aliasing enabled a single 32-block wave and removed 203 scheduler-boundary cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 2590 to 2387, raising score from 57.04015 to 61.89108.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785302897182,&quot;completed_at&quot;:1785302927737,&quot;elapsed_seconds&quot;:1018.6},{&quot;candidate_index&quot;:12,&quot;id&quot;:&quot;cand_b4af5295268a&quot;,&quot;parent_id&quot;:&quot;cand_36f63afb9ea9&quot;,&quot;commit_sha&quot;:&quot;4a0f4eae6e39a5d6c65ada452a1a868df7cb0ad0&quot;,&quot;cycles&quot;:2164,&quot;score&quot;:68.268946,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:116,&quot;mcts_value_sum&quot;:11112.552,&quot;hypothesis&quot;:&quot;Scheduling all 16 rounds in one per-wave DAG will hide each round\u2019s final hash dependency tail behind next-round gathers from completed blocks, reducing 2387 cycles to roughly 2100.&quot;,&quot;eval_summary&quot;:&quot;A cross-round DAG hid round-boundary dependency tails and removed 223 cycles while preserving all frozen checks.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 2387 to 2164, raising score from 61.89108 to 68.26895.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785302970657,&quot;completed_at&quot;:1785303126985,&quot;elapsed_seconds&quot;:1217.9},{&quot;candidate_index&quot;:13,&quot;id&quot;:&quot;cand_e9630e0ade2e&quot;,&quot;parent_id&quot;:&quot;cand_b4af5295268a&quot;,&quot;commit_sha&quot;:&quot;adc656fa1197be79dabd87e4e426a5bd399c7183&quot;,&quot;cycles&quot;:2092,&quot;score&quot;:70.618547,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:115,&quot;mcts_value_sum&quot;:11044.283,&quot;hypothesis&quot;:&quot;Caching the two depth-one node values and selecting between them with the idle flow engine will bypass two full gather rounds, reducing 2164 cycles to roughly 1975.&quot;,&quot;eval_summary&quot;:&quot;Depth-one caching was beneficial but saved only 72 cycles, showing the cross-round scheduler had already hidden much of those gather rounds behind other work.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 2164 to 2092, raising score from 68.26895 to 70.61855.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785303195934,&quot;completed_at&quot;:1785303244774,&quot;elapsed_seconds&quot;:1335.7},{&quot;candidate_index&quot;:14,&quot;id&quot;:&quot;cand_b9ff4926264d&quot;,&quot;parent_id&quot;:&quot;cand_e9630e0ade2e&quot;,&quot;commit_sha&quot;:&quot;beefd39f3a0085f8e574dde50d640361ac7ec165&quot;,&quot;cycles&quot;:2030,&quot;score&quot;:72.775369,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:114,&quot;mcts_value_sum&quot;:10973.664,&quot;hypothesis&quot;:&quot;Software-pipelining vector preload and writeback across blocks will overlap each transfer with the next block\u2019s address calculation, reducing 2092 cycles to about 2030.&quot;,&quot;eval_summary&quot;:&quot;Cross-engine software pipelining removed 62 fixed transfer cycles by overlapping each vector load/store with the next address calculation.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 2092 to the predicted 2030, raising score from 70.61855 to 72.77537.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785303284848,&quot;completed_at&quot;:1785303325688,&quot;elapsed_seconds&quot;:1416.6},{&quot;candidate_index&quot;:15,&quot;id&quot;:&quot;cand_26de77b51802&quot;,&quot;parent_id&quot;:&quot;cand_b9ff4926264d&quot;,&quot;commit_sha&quot;:&quot;c5f9072ed2733bd1600de92361452d5bd7042051&quot;,&quot;cycles&quot;:1999,&quot;score&quot;:73.903952,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:113,&quot;mcts_value_sum&quot;:10900.889,&quot;hypothesis&quot;:&quot;Scheduling final vector writeback inside the cross-round DAG will overlap output stores from completed contexts with remaining computation, reducing 2030 cycles to about 2005.&quot;,&quot;eval_summary&quot;:&quot;DAG-integrated writeback hid 31 output-transfer cycles by reusing dead temporary lanes for addresses and overlapping stores with unfinished computation.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 2030 to 1999, raising score from 72.77537 to 73.90395.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785303369490,&quot;completed_at&quot;:1785303428490,&quot;elapsed_seconds&quot;:1519.4},{&quot;candidate_index&quot;:16,&quot;id&quot;:&quot;cand_d78c55bb1fab&quot;,&quot;parent_id&quot;:&quot;cand_26de77b51802&quot;,&quot;commit_sha&quot;:&quot;028899cdf045bb6c9a8c91d6b5d1e574a02703e2&quot;,&quot;cycles&quot;:1984,&quot;score&quot;:74.462702,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:112,&quot;mcts_value_sum&quot;:10826.985,&quot;hypothesis&quot;:&quot;Packing independent invariant vector broadcasts to the six-slot VALU limit will remove 15 serialized setup cycles, reducing 1999 cycles to about 1984.&quot;,&quot;eval_summary&quot;:&quot;Filling available VALU slots during invariant initialization removed 15 serialized setup cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1999 to the predicted 1984, raising score from 73.90395 to 74.46270.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785303461365,&quot;completed_at&quot;:1785303491015,&quot;elapsed_seconds&quot;:1581.9},{&quot;candidate_index&quot;:17,&quot;id&quot;:&quot;cand_71012758d20d&quot;,&quot;parent_id&quot;:&quot;cand_d78c55bb1fab&quot;,&quot;commit_sha&quot;:&quot;6b4b8a54517d97f7be8736a2d6b826723d5eccf6&quot;,&quot;cycles&quot;:1996,&quot;score&quot;:74.01503,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:74.015,&quot;hypothesis&quot;:&quot;Replacing depth-one vselects with arithmetic interpolation will remove the one-slot flow bottleneck, reducing 1984 cycles to roughly 1935.&quot;,&quot;eval_summary&quot;:&quot;Moving depth-one selection from flow to VALU increased contention; the original vselect path schedules better despite its single-slot engine.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1984 to 1996 and score fell from 74.46270 to 74.01503.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785303515461,&quot;completed_at&quot;:1785303557924,&quot;elapsed_seconds&quot;:1648.8},{&quot;candidate_index&quot;:18,&quot;id&quot;:&quot;cand_64148f52619e&quot;,&quot;parent_id&quot;:&quot;cand_d78c55bb1fab&quot;,&quot;commit_sha&quot;:&quot;f954ff579dcfe82af8652e4b2a8ca64f3c653e66&quot;,&quot;cycles&quot;:1961,&quot;score&quot;:75.336053,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:110,&quot;mcts_value_sum&quot;:10678.507,&quot;hypothesis&quot;:&quot;Preallocating and pairing all task constants in two-slot load bundles will remove about 23 serialized setup cycles, reducing 1984 cycles to roughly 1961.&quot;,&quot;eval_summary&quot;:&quot;Preallocating known constants and filling both load slots removed 23 serialized setup cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1984 to the predicted 1961, raising score from 74.46270 to 75.33605.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785303636049,&quot;completed_at&quot;:1785303683844,&quot;elapsed_seconds&quot;:1774.8},{&quot;candidate_index&quot;:19,&quot;id&quot;:&quot;cand_4e72adc3c362&quot;,&quot;parent_id&quot;:&quot;cand_64148f52619e&quot;,&quot;commit_sha&quot;:&quot;088c111f59994dd9eb70d2edb5379ce44ffe7dd6&quot;,&quot;cycles&quot;:1955,&quot;score&quot;:75.567263,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:109,&quot;mcts_value_sum&quot;:10603.171,&quot;hypothesis&quot;:&quot;Bootstrapping header variables in place and pairing their load slots will remove six setup cycles, reducing 1961 cycles to about 1955.&quot;,&quot;eval_summary&quot;:&quot;In-place header bootstrapping removed the shared-address dependency and saved six setup cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1961 to the predicted 1955, raising score from 75.33605 to 75.56726.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785303707259,&quot;completed_at&quot;:1785303738925,&quot;elapsed_seconds&quot;:1829.8},{&quot;candidate_index&quot;:20,&quot;id&quot;:&quot;cand_eeddf84e1e4e&quot;,&quot;parent_id&quot;:&quot;cand_4e72adc3c362&quot;,&quot;commit_sha&quot;:&quot;e2ee97899f8f6d381a5f1bcd81cb5844ef4cfb75&quot;,&quot;cycles&quot;:1951,&quot;score&quot;:75.722194,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:108,&quot;mcts_value_sum&quot;:10527.604,&quot;hypothesis&quot;:&quot;Eliminating unused runtime metadata initialization will remove four header-load cycles, reducing 1955 cycles to about 1951.&quot;,&quot;eval_summary&quot;:&quot;Removing dead runtime metadata and n_nodes vector initialization saved four setup cycles and 12 scratch words without affecting correctness.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1955 to the predicted 1951, raising score from 75.56726 to 75.72219.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785303802347,&quot;completed_at&quot;:1785303895839,&quot;elapsed_seconds&quot;:1986.7},{&quot;candidate_index&quot;:21,&quot;id&quot;:&quot;cand_a365ac11e97d&quot;,&quot;parent_id&quot;:&quot;cand_eeddf84e1e4e&quot;,&quot;commit_sha&quot;:&quot;bc5dc4cb65840ce3ff9c8e07620df812954f8b1e&quot;,&quot;cycles&quot;:1922,&quot;score&quot;:76.864724,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:107,&quot;mcts_value_sum&quot;:10451.882,&quot;hypothesis&quot;:&quot;Integrating complete-vector preload into each cross-round DAG will overlap input address generation and vloads with earlier contexts\u2019 round work, reducing 1951 cycles to roughly 1920.&quot;,&quot;eval_summary&quot;:&quot;Context-local DAG preloads hid 29 input-transfer cycles behind computation while preserving zero-round and randomized correctness.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1951 to 1922, raising score from 75.72219 to 76.86472.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785303961254,&quot;completed_at&quot;:1785304007750,&quot;elapsed_seconds&quot;:2098.7},{&quot;candidate_index&quot;:22,&quot;id&quot;:&quot;cand_2b92f8fcbd34&quot;,&quot;parent_id&quot;:&quot;cand_a365ac11e97d&quot;,&quot;commit_sha&quot;:&quot;0e1535d72bd4f90fd476d6bbd8952c542092fcaa&quot;,&quot;cycles&quot;:1979,&quot;score&quot;:74.650834,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:74.651,&quot;hypothesis&quot;:&quot;Caching the four depth-two nodes and selecting among them in the flow engine will replace two full gather rounds with three vector muxes per context, reducing 1922 cycles to roughly 1900.&quot;,&quot;eval_summary&quot;:&quot;Three flow muxes per context cost more than the depth-two gathers they replaced; depth-two caching also exhausted scratch capacity.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1922 to 1979 and score fell from 76.86472 to 74.65083.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785304055792,&quot;completed_at&quot;:1785304290748,&quot;elapsed_seconds&quot;:2381.7},{&quot;candidate_index&quot;:23,&quot;id&quot;:&quot;cand_2c941f999ef6&quot;,&quot;parent_id&quot;:&quot;cand_a365ac11e97d&quot;,&quot;commit_sha&quot;:&quot;d41a898af106f18c9e4880f78ac8ffe51520f77f&quot;,&quot;cycles&quot;:1918,&quot;score&quot;:77.025026,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:105,&quot;mcts_value_sum&quot;:10300.366,&quot;hypothesis&quot;:&quot;Cross-engine packing of invariant initialization and the initial pause will remove four exposed setup cycles, reducing 1922 cycles to roughly 1918.&quot;,&quot;eval_summary&quot;:&quot;Filling idle cross-engine slots during invariant setup and pause removed four exposed cycles without extra scratch.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1922 to the predicted 1918, raising score from 76.86472 to 77.02503.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785304343157,&quot;completed_at&quot;:1785304410806,&quot;elapsed_seconds&quot;:2501.7},{&quot;candidate_index&quot;:24,&quot;id&quot;:&quot;cand_ccfb8ca21bc8&quot;,&quot;parent_id&quot;:&quot;cand_2c941f999ef6&quot;,&quot;commit_sha&quot;:&quot;4bdc0d9adf387e77ed4d929a0c70d532fc616936&quot;,&quot;cycles&quot;:1918,&quot;score&quot;:77.025026,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:77.025,&quot;hypothesis&quot;:&quot;Parallelizing wrap-round index reset with discarded child-index calculation will shorten the only wrap-to-root dependency chain, reducing 1918 cycles to roughly 1916.&quot;,&quot;eval_summary&quot;:&quot;Shortening the wrap dependency chain provided no benefit because unchanged VALU throughput, not wrap latency, controls the schedule.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles and score were unchanged at 1918 and 77.02503.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785304480464,&quot;completed_at&quot;:1785304535106,&quot;elapsed_seconds&quot;:2626.0},{&quot;candidate_index&quot;:25,&quot;id&quot;:&quot;cand_688fbd22af78&quot;,&quot;parent_id&quot;:&quot;cand_2c941f999ef6&quot;,&quot;commit_sha&quot;:&quot;6fe15dfbfc1c05165d430b4ae04028debc102d76&quot;,&quot;cycles&quot;:1909,&quot;score&quot;:77.388161,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:103,&quot;mcts_value_sum&quot;:10146.316,&quot;hypothesis&quot;:&quot;Prioritizing ready VALU address nodes that immediately unlock gather loads will reduce load-engine bubbles, lowering 1918 cycles to roughly 1880.&quot;,&quot;eval_summary&quot;:&quot;Prioritizing address nodes that immediately unlock gathers reduced load-engine bubbles by nine cycles, though less than projected.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1918 to 1909, raising score from 77.02503 to 77.38816.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785304575491,&quot;completed_at&quot;:1785304617223,&quot;elapsed_seconds&quot;:2708.1},{&quot;candidate_index&quot;:26,&quot;id&quot;:&quot;cand_f0e07ec7f33a&quot;,&quot;parent_id&quot;:&quot;cand_688fbd22af78&quot;,&quot;commit_sha&quot;:&quot;7e06eb203ee02ef395370005db73c7dbf9fac9fa&quot;,&quot;cycles&quot;:1908,&quot;score&quot;:77.428721,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:102,&quot;mcts_value_sum&quot;:10068.928,&quot;hypothesis&quot;:&quot;Software-pipelining the three live header-pointer bootstraps will fill the currently idle fourth load slot and remove one setup cycle, reducing 1909 cycles to 1908.&quot;,&quot;eval_summary&quot;:&quot;Pipelining header address creation with the first pointer load filled an idle load slot and saved one setup cycle.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1909 to the predicted 1908, raising score from 77.38816 to 77.42872.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785304649015,&quot;completed_at&quot;:1785304688331,&quot;elapsed_seconds&quot;:2779.2},{&quot;candidate_index&quot;:27,&quot;id&quot;:&quot;cand_1a18a720b7fa&quot;,&quot;parent_id&quot;:&quot;cand_f0e07ec7f33a&quot;,&quot;commit_sha&quot;:&quot;09081552abe75bb28e43fdbaa2cac1784f967531&quot;,&quot;cycles&quot;:1905,&quot;score&quot;:77.550656,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:101,&quot;mcts_value_sum&quot;:9991.499,&quot;hypothesis&quot;:&quot;Pipelining vector-constant broadcasts behind later scalar-constant load packets will eliminate three standalone VALU setup cycles, reducing 1908 cycles to roughly 1905.&quot;,&quot;eval_summary&quot;:&quot;Overlapping vector broadcasts with later constant loads eliminated all three standalone broadcast cycles without extra scratch.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1908 to the predicted 1905, raising score from 77.42872 to 77.55066.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785304742519,&quot;completed_at&quot;:1785304823643,&quot;elapsed_seconds&quot;:2914.6},{&quot;candidate_index&quot;:28,&quot;id&quot;:&quot;cand_897383fbcd94&quot;,&quot;parent_id&quot;:&quot;cand_1a18a720b7fa&quot;,&quot;commit_sha&quot;:&quot;2abaf1e0052c33195baef9392b949cdd01bdc964&quot;,&quot;cycles&quot;:1903,&quot;score&quot;:77.63216,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:100,&quot;mcts_value_sum&quot;:9913.948,&quot;hypothesis&quot;:&quot;Moving depth-one cache loads and broadcasts into the first wave DAG will overlap their two setup cycles with root-round preload and hashing, reducing 1905 cycles to roughly 1903.&quot;,&quot;eval_summary&quot;:&quot;First-wave DAG integration fully hid the two standalone depth-one cache setup cycles while preserving edge-case correctness and scratch usage.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1905 to the predicted 1903, raising score from 77.55066 to 77.63216.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785304867743,&quot;completed_at&quot;:1785304983681,&quot;elapsed_seconds&quot;:3074.6},{&quot;candidate_index&quot;:29,&quot;id&quot;:&quot;cand_3d40f9341466&quot;,&quot;parent_id&quot;:&quot;cand_897383fbcd94&quot;,&quot;commit_sha&quot;:&quot;854fba869abdfe490036ae56b1dbb41c0c6d002c&quot;,&quot;cycles&quot;:1903,&quot;score&quot;:77.63216,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:77.632,&quot;hypothesis&quot;:&quot;Moving the root-vector broadcast and depth-one address generation into the first wave DAG will hide the final exposed invariant-setup cycle, reducing 1903 cycles to about 1902.&quot;,&quot;eval_summary&quot;:&quot;Moving the final setup work into the DAG only shifted the root broadcast onto the VALU schedule; it did not reduce the critical path.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles and score were unchanged at 1903 and 77.63216.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785305054239,&quot;completed_at&quot;:1785305098230,&quot;elapsed_seconds&quot;:3189.1},{&quot;candidate_index&quot;:30,&quot;id&quot;:&quot;cand_14d60a107715&quot;,&quot;parent_id&quot;:&quot;cand_897383fbcd94&quot;,&quot;commit_sha&quot;:&quot;2042fa43e4a4cde2dc2ee57442e07638e5d5969e&quot;,&quot;cycles&quot;:1665,&quot;score&quot;:88.729129,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:98,&quot;mcts_value_sum&quot;:9758.684,&quot;hypothesis&quot;:&quot;Prioritizing ready DAG nodes by proximity to their next descendant load will advance future gather addresses before unrelated VALU work and reduce residual load-engine starvation, lowering 1903 cycles to roughly 1885.&quot;,&quot;eval_summary&quot;:&quot;Nearest-descendant-load priority dramatically reduced load starvation, saving 238 cycles\u2014far exceeding the projected improvement without changing generated operations.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1903 to 1665, raising score from 77.63216 to 88.72913.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785305126865,&quot;completed_at&quot;:1785305159959,&quot;elapsed_seconds&quot;:3250.9},{&quot;candidate_index&quot;:31,&quot;id&quot;:&quot;cand_df3fa7eac229&quot;,&quot;parent_id&quot;:&quot;cand_14d60a107715&quot;,&quot;commit_sha&quot;:&quot;8933efd06b44d163e49283f0c276e26f7034b291&quot;,&quot;cycles&quot;:1665,&quot;score&quot;:88.729129,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:88.729,&quot;hypothesis&quot;:&quot;Prioritizing ready load nodes that are closest to completing a shared consumer will release gather XOR nodes sooner and reduce pipeline gaps, lowering 1665 cycles to roughly 1600.&quot;,&quot;eval_summary&quot;:&quot;Nearest-load-distance priority already groups gather completion effectively; the dynamic consumer-completion tie-breaker did not alter official-scale throughput.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles and score remained unchanged at 1665 and 88.72913.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785305229234,&quot;completed_at&quot;:1785305265297,&quot;elapsed_seconds&quot;:3356.2},{&quot;candidate_index&quot;:32,&quot;id&quot;:&quot;cand_fcc1492bf7e5&quot;,&quot;parent_id&quot;:&quot;cand_14d60a107715&quot;,&quot;commit_sha&quot;:&quot;4c846474f4f2792442ebe13196e6413ccb065770&quot;,&quot;cycles&quot;:1574,&quot;score&quot;:93.858958,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:96,&quot;mcts_value_sum&quot;:9581.226,&quot;hypothesis&quot;:&quot;With nearest-load scheduling now making the load engine the dominant bound, caching depth-two nodes and replacing those two gather rounds with flow selections will reduce 1665 cycles to roughly 1480.&quot;,&quot;eval_summary&quot;:&quot;Under nearest-load scheduling, depth-two caching became profitable: removing two gather rounds outweighed added flow serialization and saved 91 cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1665 to 1574, raising score from 88.72913 to 93.85896.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785305318165,&quot;completed_at&quot;:1785305468535,&quot;elapsed_seconds&quot;:3559.4},{&quot;candidate_index&quot;:33,&quot;id&quot;:&quot;cand_aace69a9480e&quot;,&quot;parent_id&quot;:&quot;cand_fcc1492bf7e5&quot;,&quot;commit_sha&quot;:&quot;5e019c32cbc7b27e2b45a9aa32ca59d5209c4af4&quot;,&quot;cycles&quot;:1582,&quot;score&quot;:93.384324,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:93.384,&quot;hypothesis&quot;:&quot;Precomputing depth-two cache differences and replacing the two pairwise flow selections with VALU multiply_add operations will cut depth-two flow serialization from three cycles per context to one, reducing 1574 cycles to roughly 1490.&quot;,&quot;eval_summary&quot;:&quot;The original flow vselects are preferable; moving pair selection onto VALU increased contention despite reducing flow serialization.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1574 to 1582 and score fell from 93.85896 to 93.38432.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785305529000,&quot;completed_at&quot;:1785305572343,&quot;elapsed_seconds&quot;:3663.3},{&quot;candidate_index&quot;:34,&quot;id&quot;:&quot;cand_7ef74ee49677&quot;,&quot;parent_id&quot;:&quot;cand_fcc1492bf7e5&quot;,&quot;commit_sha&quot;:&quot;619bb7180a06c3e15a2b8ce4328fa7b10d57e976&quot;,&quot;cycles&quot;:1572,&quot;score&quot;:93.978372,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:94,&quot;mcts_value_sum&quot;:9393.983,&quot;hypothesis&quot;:&quot;Using index parity as the shared selector for both depth-two node pairs will remove one VALU predicate per context on both cached rounds, reducing 1574 cycles to roughly 1563.&quot;,&quot;eval_summary&quot;:&quot;Sharing the parity predicate removed 64 VALU operations, though existing load and flow constraints limited the gain to two cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1574 to 1572, raising score from 93.85896 to 93.97837.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785305605146,&quot;completed_at&quot;:1785305645313,&quot;elapsed_seconds&quot;:3736.2},{&quot;candidate_index&quot;:35,&quot;id&quot;:&quot;cand_27ff425dae6c&quot;,&quot;parent_id&quot;:&quot;cand_7ef74ee49677&quot;,&quot;commit_sha&quot;:&quot;13171cff666fc94cbb9bea9d5b06b67e825cd586&quot;,&quot;cycles&quot;:1566,&quot;score&quot;:94.338442,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:93,&quot;mcts_value_sum&quot;:9300.004,&quot;hypothesis&quot;:&quot;Prefetching each depth-two cached value during the preceding depth-one index update will reuse the existing hash-parity result, overlap flow selection with index arithmetic, and reduce 1572 cycles to roughly 1545.&quot;,&quot;eval_summary&quot;:&quot;Depth-two prefetch reused existing parity and exposed selection work earlier, saving six cycles while preserving all checks.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1572 to 1566, raising score from 93.97837 to 94.33844.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785305697488,&quot;completed_at&quot;:1785305772019,&quot;elapsed_seconds&quot;:3862.9},{&quot;candidate_index&quot;:36,&quot;id&quot;:&quot;cand_658cf8d2c3a1&quot;,&quot;parent_id&quot;:&quot;cand_27ff425dae6c&quot;,&quot;commit_sha&quot;:&quot;ff34f66b08bb9601969d893c5c6d0de04bf16211&quot;,&quot;cycles&quot;:1566,&quot;score&quot;:94.338442,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:94.338,&quot;hypothesis&quot;:&quot;Computing the depth-two group predicate from the still-zero-based depth-one index immediately after hash parity will let the final prefetch select overlap next_index, reducing 1566 cycles to roughly 1560.&quot;,&quot;eval_summary&quot;:&quot;Moving the group predicate earlier exposed selection sooner, but the added child dependency offset that latency advantage and left the critical schedule unchanged.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score were unchanged at 1566 and 94.33844.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785305802553,&quot;completed_at&quot;:1785305873312,&quot;elapsed_seconds&quot;:3964.2},{&quot;candidate_index&quot;:37,&quot;id&quot;:&quot;cand_d5bd140fae98&quot;,&quot;parent_id&quot;:&quot;cand_27ff425dae6c&quot;,&quot;commit_sha&quot;:&quot;a83183667d6b44d3400eb2fa18519d237ac86177&quot;,&quot;cycles&quot;:1561,&quot;score&quot;:94.640615,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:91,&quot;mcts_value_sum&quot;:9111.327,&quot;hypothesis&quot;:&quot;Prefetching the depth-one cached node during the preceding root-round index update will reuse hash parity, eliminate the next round\u2019s equality predicate, and reduce 1566 cycles to roughly 1560.&quot;,&quot;eval_summary&quot;:&quot;Root-round parity can prefetch the following depth-one cache value, eliminating its later predicate and saving five cycles without extra scratch.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1566 to 1561, raising score from 94.33844 to 94.64061.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785305913590,&quot;completed_at&quot;:1785305954659,&quot;elapsed_seconds&quot;:4045.6},{&quot;candidate_index&quot;:38,&quot;id&quot;:&quot;cand_ad39ab8b478f&quot;,&quot;parent_id&quot;:&quot;cand_d5bd140fae98&quot;,&quot;commit_sha&quot;:&quot;e7d9ba7fc9a371d545866d2dfb8187332a3c6f51&quot;,&quot;cycles&quot;:1561,&quot;score&quot;:94.640615,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:94.641,&quot;hypothesis&quot;:&quot;Computing the depth-two low/high group predicate immediately after the depth-one XOR will hide it behind the hash stages and release the final prefetch selection before next_index, reducing 1561 cycles to roughly 1558.&quot;,&quot;eval_summary&quot;:&quot;Overlapping the group predicate with hashing shortened its dependency path but did not change official-scale throughput, indicating another scheduler or engine constraint dominates.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1561 and 94.64061.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785305989135,&quot;completed_at&quot;:1785306032101,&quot;elapsed_seconds&quot;:4123.0},{&quot;candidate_index&quot;:39,&quot;id&quot;:&quot;cand_588560f28764&quot;,&quot;parent_id&quot;:&quot;cand_d5bd140fae98&quot;,&quot;commit_sha&quot;:&quot;fe6c0a2c2553e81b73b5ce83b44e0b6dd4a68f5a&quot;,&quot;cycles&quot;:1558,&quot;score&quot;:94.82285,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:89,&quot;mcts_value_sum&quot;:8922.046,&quot;hypothesis&quot;:&quot;Deriving depth-two cache addresses by incrementing the existing depth-one addresses will remove four scalar constant loads from first-wave initialization, reducing 1561 cycles to roughly 1559.&quot;,&quot;eval_summary&quot;:&quot;Reusing depth-one addresses eliminated four setup loads and saved three cycles without additional scratch.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1561 to 1558, raising score from 94.64061 to 94.82285.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785306066373,&quot;completed_at&quot;:1785306105057,&quot;elapsed_seconds&quot;:4196.0},{&quot;candidate_index&quot;:40,&quot;id&quot;:&quot;cand_14872f97dafe&quot;,&quot;parent_id&quot;:&quot;cand_588560f28764&quot;,&quot;commit_sha&quot;:&quot;6f1545866b5f887d639d2fe89e4c9d5e80ce391e&quot;,&quot;cycles&quot;:1556,&quot;score&quot;:94.94473,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:88,&quot;mcts_value_sum&quot;:8827.223,&quot;hypothesis&quot;:&quot;Loading contiguous forest nodes 3\u20136 with one vector load and broadcasting its first four lanes will replace four scalar cache loads and four address steps, reducing 1558 cycles to roughly 1555.&quot;,&quot;eval_summary&quot;:&quot;A single contiguous vload safely stages all depth-two cache values and saves two cycles over scalar initialization.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1558 to 1556, raising score from 94.82285 to 94.94473.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785306139061,&quot;completed_at&quot;:1785306184755,&quot;elapsed_seconds&quot;:4275.7},{&quot;candidate_index&quot;:41,&quot;id&quot;:&quot;cand_a274b2e84047&quot;,&quot;parent_id&quot;:&quot;cand_14872f97dafe&quot;,&quot;commit_sha&quot;:&quot;20707bb79a8ddd8b321492d0f2a56421845b38c0&quot;,&quot;cycles&quot;:1545,&quot;score&quot;:95.620712,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:87,&quot;mcts_value_sum&quot;:8732.279,&quot;hypothesis&quot;:&quot;Using one forest-base vload to stage nodes 0\u20137 for both depth-one and depth-two caches will eliminate the two depth-one scalar loads and all cache-address setup, reducing 1556 cycles to roughly 1553.&quot;,&quot;eval_summary&quot;:&quot;One forest-base vload can initialize both cache levels, removing redundant loads and address setup for an 11-cycle gain.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1556 to 1545, raising score from 94.94473 to 95.62071.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785306227757,&quot;completed_at&quot;:1785306287115,&quot;elapsed_seconds&quot;:4378.0},{&quot;candidate_index&quot;:42,&quot;id&quot;:&quot;cand_6af441dc8053&quot;,&quot;parent_id&quot;:&quot;cand_a274b2e84047&quot;,&quot;commit_sha&quot;:&quot;fe89a5f1ead4c4fa29072790c2635fe58b091e21&quot;,&quot;cycles&quot;:1544,&quot;score&quot;:95.682642,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:86,&quot;mcts_value_sum&quot;:8636.658,&quot;hypothesis&quot;:&quot;Broadcasting the root vector from lane zero of the combined forest staging load will remove the standalone root load/broadcast on vector-only workloads, reducing 1545 cycles to roughly 1543.&quot;,&quot;eval_summary&quot;:&quot;Reusing staging lane zero removes redundant root setup, though added DAG dependency limits the gain to one cycle.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1545 to 1544, raising score from 95.62071 to 95.68264.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785306318498,&quot;completed_at&quot;:1785306377090,&quot;elapsed_seconds&quot;:4468.0},{&quot;candidate_index&quot;:43,&quot;id&quot;:&quot;cand_70a45241382a&quot;,&quot;parent_id&quot;:&quot;cand_6af441dc8053&quot;,&quot;commit_sha&quot;:&quot;3ebc9879f33a2d6e3b547e84f9dcbf2b3ac53b2a&quot;,&quot;cycles&quot;:1608,&quot;score&quot;:91.874378,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:91.874,&quot;hypothesis&quot;:&quot;Persisting root-round parity in the otherwise idle node-address vector will provide the later depth-two group selector one round early and remove its next_index dependency, reducing 1544 cycles to roughly 1541.&quot;,&quot;eval_summary&quot;:&quot;node_addresses aliases tmp2, so preserving parity required a scratch-lifetime remap whose scheduling cost overwhelmed the earlier selector availability.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1544 to 1608 and score fell from 95.68264 to 91.87438.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785306431818,&quot;completed_at&quot;:1785306549816,&quot;elapsed_seconds&quot;:4640.7},{&quot;candidate_index&quot;:44,&quot;id&quot;:&quot;cand_46c85007788d&quot;,&quot;parent_id&quot;:&quot;cand_6af441dc8053&quot;,&quot;commit_sha&quot;:&quot;8dca7b0337be475639e5cd0711c9b37f0b71f2d3&quot;,&quot;cycles&quot;:1544,&quot;score&quot;:95.682642,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:95.683,&quot;hypothesis&quot;:&quot;Breaking equal next-load-distance ties by the width of the nearest reachable load frontier will favor chains that release full gathers over single preloads, reducing 1544 cycles to roughly 1538.&quot;,&quot;eval_summary&quot;:&quot;Nearest-load-frontier width did not improve scheduling beyond the existing load-distance and depth priorities.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1544 and 95.68264.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785306619801,&quot;completed_at&quot;:1785306670648,&quot;elapsed_seconds&quot;:4761.6},{&quot;candidate_index&quot;:45,&quot;id&quot;:&quot;cand_8ac393dec02b&quot;,&quot;parent_id&quot;:&quot;cand_6af441dc8053&quot;,&quot;commit_sha&quot;:&quot;0bf412ead77b07e42bbc09ec78b8da4d09d90be0&quot;,&quot;cycles&quot;:1527,&quot;score&quot;:96.747872,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:83,&quot;mcts_value_sum&quot;:8353.418,&quot;hypothesis&quot;:&quot;Eliminating dead vector index-update work on wrap rounds will remove parity, child, and next-index operations whose result is immediately discarded, reducing 1544 cycles to roughly 1535.&quot;,&quot;eval_summary&quot;:&quot;Wrap-round parity and child-index calculations are dead because the index is immediately reset; removing them saved 17 cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1544 to 1527, raising score from 95.68264 to 96.74787.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785306711208,&quot;completed_at&quot;:1785306789996,&quot;elapsed_seconds&quot;:4880.9},{&quot;candidate_index&quot;:46,&quot;id&quot;:&quot;cand_d25d103cbb16&quot;,&quot;parent_id&quot;:&quot;cand_8ac393dec02b&quot;,&quot;commit_sha&quot;:&quot;0a04057b10235c9f46dd858dea6fabcf3be17fdf&quot;,&quot;cycles&quot;:1521,&quot;score&quot;:97.12952,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:82,&quot;mcts_value_sum&quot;:8256.67,&quot;hypothesis&quot;:&quot;Using the known zero index at every non-wrapping root round will collapse child and next-index generation into one VALU add, reducing 1527 cycles to roughly 1517.&quot;,&quot;eval_summary&quot;:&quot;Root rounds begin at index zero, allowing child-index generation to collapse from two VALU operations to one and save six cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1527 to 1521, raising score from 96.74787 to 97.12952.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785306854615,&quot;completed_at&quot;:1785306897312,&quot;elapsed_seconds&quot;:4988.2},{&quot;candidate_index&quot;:47,&quot;id&quot;:&quot;cand_a20d78a5dbb7&quot;,&quot;parent_id&quot;:&quot;cand_d25d103cbb16&quot;,&quot;commit_sha&quot;:&quot;5562a8c489a9feb2ea335e874376373ab65def3f&quot;,&quot;cycles&quot;:1521,&quot;score&quot;:97.12952,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:97.13,&quot;hypothesis&quot;:&quot;Precomputing the depth-one node XOR during the preceding root-round index update will hide one VALU operation across each root-to-depth-one boundary, reducing 1521 cycles to roughly 1517.&quot;,&quot;eval_summary&quot;:&quot;Moving the depth-one XOR earlier did not shorten the critical schedule; the hash-entry dependencies absorbed the available overlap.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1521 and 97.12952.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785307069565,&quot;completed_at&quot;:1785307125374,&quot;elapsed_seconds&quot;:5216.3},{&quot;candidate_index&quot;:48,&quot;id&quot;:&quot;cand_fa7232e942fb&quot;,&quot;parent_id&quot;:&quot;cand_d25d103cbb16&quot;,&quot;commit_sha&quot;:&quot;2850aa68914a0ecb30400c8b6df8d83b07b42a97&quot;,&quot;cycles&quot;:1520,&quot;score&quot;:97.193421,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:80,&quot;mcts_value_sum&quot;:8062.411,&quot;hypothesis&quot;:&quot;Prefetching each general-gather address from the one-less child index in parallel with next_index will release gather loads one VALU dependency earlier, reducing 1521 cycles to roughly 1505.&quot;,&quot;eval_summary&quot;:&quot;Child-based address prefetch released general gathers earlier, but existing scheduling constraints limited the gain to one cycle.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1521 to 1520, raising score from 97.12952 to 97.19342.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785307214393,&quot;completed_at&quot;:1785307270706,&quot;elapsed_seconds&quot;:5361.6},{&quot;candidate_index&quot;:49,&quot;id&quot;:&quot;cand_cdd571d38155&quot;,&quot;parent_id&quot;:&quot;cand_fa7232e942fb&quot;,&quot;commit_sha&quot;:&quot;8b52f96b74139e1e9bf16c2b35fb4264bb21cb3d&quot;,&quot;cycles&quot;:1551,&quot;score&quot;:95.250806,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:95.251,&quot;hypothesis&quot;:&quot;Replacing per-context offset constants with rolling scalar preload/writeback addresses will remove 31 official-scale constant loads while preserving load/store throughput, reducing 1520 cycles to roughly 1505.&quot;,&quot;eval_summary&quot;:&quot;Removing offset constants saved scratch and setup loads, but serialized rolling preload/writeback chains cost 31 cycles.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1520 to 1551 and score fell from 97.19342 to 95.25081.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785307397076,&quot;completed_at&quot;:1785307474960,&quot;elapsed_seconds&quot;:5565.9},{&quot;candidate_index&quot;:50,&quot;id&quot;:&quot;cand_12d462ec6219&quot;,&quot;parent_id&quot;:&quot;cand_fa7232e942fb&quot;,&quot;commit_sha&quot;:&quot;e4a02efd48d274ffde4d8437c6ad723405076b4e&quot;,&quot;cycles&quot;:1604,&quot;score&quot;:92.103491,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:92.103,&quot;hypothesis&quot;:&quot;Caching depth-three nodes 7\u201314 and selecting them with a serialized seven-vselect tree will remove two full gather rounds, reducing 1520 cycles to roughly 1450 despite a smaller wave size.&quot;,&quot;eval_summary&quot;:&quot;The serialized seven-vselect depth-three cache costs more flow and reduced-wave scheduling time than the eliminated gather loads save.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1520 to 1604 and score fell from 97.19342 to 92.10349.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785307553906,&quot;completed_at&quot;:1785307724661,&quot;elapsed_seconds&quot;:5815.6},{&quot;candidate_index&quot;:51,&quot;id&quot;:&quot;cand_f9b7bff61f22&quot;,&quot;parent_id&quot;:&quot;cand_fa7232e942fb&quot;,&quot;commit_sha&quot;:&quot;eac637129ac4d890eee1e24ea272b4842c71f748&quot;,&quot;cycles&quot;:1519,&quot;score&quot;:97.257406,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:77,&quot;mcts_value_sum&quot;:7777.864,&quot;hypothesis&quot;:&quot;Decoupling the required wrap reset from the following root hash will overlap index reset with root value hashing, reducing 1520 cycles to roughly 1514.&quot;,&quot;eval_summary&quot;:&quot;Separating value and index readiness lets the wrap reset overlap the following root hash, yielding a one-cycle gain.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1520 to 1519, raising score from 97.19342 to 97.25741.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785307791120,&quot;completed_at&quot;:1785307840475,&quot;elapsed_seconds&quot;:5931.4},{&quot;candidate_index&quot;:52,&quot;id&quot;:&quot;cand_955794980831&quot;,&quot;parent_id&quot;:&quot;cand_f9b7bff61f22&quot;,&quot;commit_sha&quot;:&quot;88b11b93c041381137d22b816e4505bd65dc01f5&quot;,&quot;cycles&quot;:1505,&quot;score&quot;:98.162126,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:76,&quot;mcts_value_sum&quot;:7680.606,&quot;hypothesis&quot;:&quot;Synthesizing vector-context offset constants in idle ALU slots during constant setup will remove 30 official-scale load operations without serializing preload or writeback addresses, reducing 1519 cycles to roughly 1504.&quot;,&quot;eval_summary&quot;:&quot;Layered ALU synthesis replaced 30 offset loads while preserving independent address generation, saving 14 cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1519 to 1505, raising score from 97.25741 to 98.16213.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785307926578,&quot;completed_at&quot;:1785308056127,&quot;elapsed_seconds&quot;:6147.0},{&quot;candidate_index&quot;:53,&quot;id&quot;:&quot;cand_9ccd99a3e7eb&quot;,&quot;parent_id&quot;:&quot;cand_955794980831&quot;,&quot;commit_sha&quot;:&quot;00bcfb86c95ba3d654600b5788abbf4932ee04f4&quot;,&quot;cycles&quot;:1506,&quot;score&quot;:98.096946,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:98.097,&quot;hypothesis&quot;:&quot;Deferring vector hash-constant broadcasts into the first-wave DAG will overlap their VALU work with input preloads, reducing 1505 cycles to roughly 1502.&quot;,&quot;eval_summary&quot;:&quot;Deferring broadcasts did not hide their cost; the shared first-root readiness barrier delayed the critical schedule by one cycle.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1505 to 1506 and score fell from 98.16213 to 98.09695.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785308246082,&quot;completed_at&quot;:1785308294806,&quot;elapsed_seconds&quot;:6385.7},{&quot;candidate_index&quot;:54,&quot;id&quot;:&quot;cand_ff77ec968395&quot;,&quot;parent_id&quot;:&quot;cand_955794980831&quot;,&quot;commit_sha&quot;:&quot;37eac8120518d39631588af6e02fcdda83eb0d12&quot;,&quot;cycles&quot;:1505,&quot;score&quot;:98.162126,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:98.162,&quot;hypothesis&quot;:&quot;Removing the false next_index dependency from general-round value hashing will overlap index completion with gathered-node XOR and hashing, reducing 1505 cycles to roughly 1499.&quot;,&quot;eval_summary&quot;:&quot;Relaxing general-round next_index dependencies exposed overlap, but another scheduling constraint still determines the critical path.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1505 and 98.16213.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785308384963,&quot;completed_at&quot;:1785308436765,&quot;elapsed_seconds&quot;:6527.7},{&quot;candidate_index&quot;:55,&quot;id&quot;:&quot;cand_dbb06aeacbf6&quot;,&quot;parent_id&quot;:&quot;cand_955794980831&quot;,&quot;commit_sha&quot;:&quot;179e34505b90a52bc23b0a1170e1c9a9e96e2ee0&quot;,&quot;cycles&quot;:1504,&quot;score&quot;:98.227394,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:73,&quot;mcts_value_sum&quot;:7386.185,&quot;hypothesis&quot;:&quot;Algebraically synthesizing the two unique fused-hash scalar multipliers will remove their constant loads and shorten setup by one cycle, reducing 1505 cycles to roughly 1504.&quot;,&quot;eval_summary&quot;:&quot;Synthesizing fused multipliers 4097 and 33 in idle setup ALU slots eliminated their scalar loads and saved one cycle without extra scratch.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1505 to 1504, raising score from 98.16213 to 98.22739.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785308518537,&quot;completed_at&quot;:1785308588980,&quot;elapsed_seconds&quot;:6679.9},{&quot;candidate_index&quot;:56,&quot;id&quot;:&quot;cand_2df3d8087afd&quot;,&quot;parent_id&quot;:&quot;cand_dbb06aeacbf6&quot;,&quot;commit_sha&quot;:&quot;ae5863c45fa145756a203ee9ac84e1d76ede99a3&quot;,&quot;cycles&quot;:1503,&quot;score&quot;:98.292748,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:72,&quot;mcts_value_sum&quot;:7287.958,&quot;hypothesis&quot;:&quot;Synthesizing the six hash shift-count constants with a three-layer scalar ALU addition chain will remove their constant loads and reduce 1504 cycles to roughly 1501.&quot;,&quot;eval_summary&quot;:&quot;Synthesizing six shift constants in setup ALU slots removed their loads and saved one cycle without additional scratch.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1504 to 1503, raising score from 98.22739 to 98.29275.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785308677982,&quot;completed_at&quot;:1785308862254,&quot;elapsed_seconds&quot;:6953.2},{&quot;candidate_index&quot;:57,&quot;id&quot;:&quot;cand_500837f84791&quot;,&quot;parent_id&quot;:&quot;cand_2df3d8087afd&quot;,&quot;commit_sha&quot;:&quot;1a8f8682d6cb1005d5dbca80396ba53064958a1f&quot;,&quot;cycles&quot;:1513,&quot;score&quot;:97.643093,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:97.643,&quot;hypothesis&quot;:&quot;Representing each depth-two cache pair as a base vector plus delta and selecting with two VALU multiply_adds will replace two serialized flow vselects per context, reducing 1503 cycles to roughly 1465.&quot;,&quot;eval_summary&quot;:&quot;Moving depth-two pair selection from flow to VALU increased pressure on the critical VALU schedule; the reduced flow occupancy did not compensate.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1503 to 1513 and score fell from 98.29275 to 97.64309.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785308968775,&quot;completed_at&quot;:1785309021207,&quot;elapsed_seconds&quot;:7112.1},{&quot;candidate_index&quot;:58,&quot;id&quot;:&quot;cand_79a1e1def7a7&quot;,&quot;parent_id&quot;:&quot;cand_2df3d8087afd&quot;,&quot;commit_sha&quot;:&quot;638a43afdc5c04a4db4d8f0ca8f9d1e5a7f8299f&quot;,&quot;cycles&quot;:1504,&quot;score&quot;:98.227394,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:98.227,&quot;hypothesis&quot;:&quot;Deriving the full-vector input-values pointer from the loaded input-indices pointer and synthesized batch offset will remove one startup packet, reducing 1503 cycles to roughly 1502.&quot;,&quot;eval_summary&quot;:&quot;Late batch-offset readiness made pointer derivation cost more setup time than the removed startup packet saved.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1503 to 1504 and score fell from 98.29275 to 98.22739.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785309109111,&quot;completed_at&quot;:1785309176788,&quot;elapsed_seconds&quot;:7267.7},{&quot;candidate_index&quot;:59,&quot;id&quot;:&quot;cand_e04fa056d0a0&quot;,&quot;parent_id&quot;:&quot;cand_2df3d8087afd&quot;,&quot;commit_sha&quot;:&quot;29ac11a51be047db03fc2da465d544704ddceb96&quot;,&quot;cycles&quot;:1488,&quot;score&quot;:99.283602,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:69,&quot;mcts_value_sum&quot;:6993.794,&quot;hypothesis&quot;:&quot;Using a flow vselect to form branch codes on depth-two and general rounds will collapse child-plus-one into one multiply_add, reducing VALU pressure and lowering 1503 cycles to roughly 1460.&quot;,&quot;eval_summary&quot;:&quot;Flow-selected branch codes removed one VALU operation from converted index updates while preserving early general-address prefetch, saving 15 cycles without extra scratch.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1503 to 1488, raising score from 98.29275 to 99.28360.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785309237517,&quot;completed_at&quot;:1785309288465,&quot;elapsed_seconds&quot;:7379.4},{&quot;candidate_index&quot;:60,&quot;id&quot;:&quot;cand_671ed94f7ce2&quot;,&quot;parent_id&quot;:&quot;cand_e04fa056d0a0&quot;,&quot;commit_sha&quot;:&quot;07cf46a7d1e75d8ec7523215801c07225bcfc3f2&quot;,&quot;cycles&quot;:1488,&quot;score&quot;:99.283602,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:99.284,&quot;hypothesis&quot;:&quot;Synthesizing scalar zero and two from the required one constant will remove two setup loads without delaying the shift-constant chain, reducing 1488 cycles to roughly 1487.&quot;,&quot;eval_summary&quot;:&quot;Synthesizing zero and two removed scalar loads, but downstream setup readiness remained the critical constraint.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1488 and 99.28360.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785309385850,&quot;completed_at&quot;:1785309426583,&quot;elapsed_seconds&quot;:7517.5},{&quot;candidate_index&quot;:61,&quot;id&quot;:&quot;cand_167608a3ab92&quot;,&quot;parent_id&quot;:&quot;cand_e04fa056d0a0&quot;,&quot;commit_sha&quot;:&quot;ef892006e60e0dea09d126169d9ab8a52be88987&quot;,&quot;cycles&quot;:1482,&quot;score&quot;:99.68556,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:67,&quot;mcts_value_sum&quot;:6795.227,&quot;hypothesis&quot;:&quot;Moving root next-index generation from VALU add to a parity-driven flow vselect will remove one VALU operation per root context, reducing 1488 cycles to roughly 1484.&quot;,&quot;eval_summary&quot;:&quot;Root branch-code selection uses spare flow capacity, removing critical VALU work and saving six cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1488 to 1482, raising score from 99.28360 to 99.68556.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785309467314,&quot;completed_at&quot;:1785309535551,&quot;elapsed_seconds&quot;:7626.5},{&quot;candidate_index&quot;:62,&quot;id&quot;:&quot;cand_2bca80a8dcf3&quot;,&quot;parent_id&quot;:&quot;cand_167608a3ab92&quot;,&quot;commit_sha&quot;:&quot;a0fe002733a8d6498b7c3776a083db689c978e1e&quot;,&quot;cycles&quot;:1477,&quot;score&quot;:100.02302,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:66,&quot;mcts_value_sum&quot;:6695.542,&quot;hypothesis&quot;:&quot;Forwarding the persistent zero vector across wrap boundaries will eliminate vector index-reset instructions, reducing 1482 cycles to roughly 1477.&quot;,&quot;eval_summary&quot;:&quot;Logical zero-vector forwarding safely eliminated physical wrap resets, saving five cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1482 to 1477, raising score from 99.68556 to 100.02302.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785309716774,&quot;completed_at&quot;:1785309771608,&quot;elapsed_seconds&quot;:7862.5},{&quot;candidate_index&quot;:63,&quot;id&quot;:&quot;cand_3042574b82b7&quot;,&quot;parent_id&quot;:&quot;cand_2bca80a8dcf3&quot;,&quot;commit_sha&quot;:&quot;58acffa259fb517263d75c2e33d8eb59bde1600e&quot;,&quot;cycles&quot;:1479,&quot;score&quot;:99.887762,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:99.888,&quot;hypothesis&quot;:&quot;Hoisting the depth-two group predicate to depth-one round entry will overlap its VALU comparison with hashing and release the cached depth-two selection earlier, reducing 1477 cycles to roughly 1474.&quot;,&quot;eval_summary&quot;:&quot;Hoisting exposed a required index-read ordering edge whose scheduling cost outweighed earlier predicate availability.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1477 to 1479 and score fell from 100.02302 to 99.88776.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785309819448,&quot;completed_at&quot;:1785309935336,&quot;elapsed_seconds&quot;:8026.2},{&quot;candidate_index&quot;:64,&quot;id&quot;:&quot;cand_c3b8e4ad17c4&quot;,&quot;parent_id&quot;:&quot;cand_2bca80a8dcf3&quot;,&quot;commit_sha&quot;:&quot;f471856bdbc9c7ba9442a3838033ffc9f1930f65&quot;,&quot;cycles&quot;:1478,&quot;score&quot;:99.955345,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:99.955,&quot;hypothesis&quot;:&quot;Reusing the consumed node-value scratch for a depth-one branch code will collapse child-plus-one into one multiply_add, reducing 1477 cycles to roughly 1472.&quot;,&quot;eval_summary&quot;:&quot;Depth-one is flow-constrained by cache selection, so adding a branch-code vselect outweighed the removed VALU operation.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1477 to 1478 and score fell from 100.02302 to 99.95535.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785309969565,&quot;completed_at&quot;:1785310018611,&quot;elapsed_seconds&quot;:8109.5},{&quot;candidate_index&quot;:65,&quot;id&quot;:&quot;cand_d9e6b508f714&quot;,&quot;parent_id&quot;:&quot;cand_2bca80a8dcf3&quot;,&quot;commit_sha&quot;:&quot;36b1d15bf42f8146637c6410ec7be75844de074c&quot;,&quot;cycles&quot;:1476,&quot;score&quot;:100.090786,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:63,&quot;mcts_value_sum&quot;:6395.675,&quot;hypothesis&quot;:&quot;Loading the three contiguous input pointers with one header vload will replace the current three-packet scalar initialization with two packets, reducing 1477 cycles to roughly 1476.&quot;,&quot;eval_summary&quot;:&quot;A contiguous header vload safely replaces three scalar pointer-init packets with two, saving one cycle.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1477 to 1476, raising score from 100.02302 to 100.09079.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785310077054,&quot;completed_at&quot;:1785310174730,&quot;elapsed_seconds&quot;:8265.6},{&quot;candidate_index&quot;:66,&quot;id&quot;:&quot;cand_f21e9de0a5c8&quot;,&quot;parent_id&quot;:&quot;cand_d9e6b508f714&quot;,&quot;commit_sha&quot;:&quot;c1cda19c7c8099713d3dcbac9fd4c4f9fe5ad73a&quot;,&quot;cycles&quot;:1476,&quot;score&quot;:100.090786,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.091,&quot;hypothesis&quot;:&quot;Preserving the root and depth-one node values already fetched in the widened header vload will eliminate their later scalar cache loads, reducing 1476 cycles to roughly 1473.&quot;,&quot;eval_summary&quot;:&quot;Preserving nodes 0\u20132 did not remove the depth-two cache vload that determines official initialization latency.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1476 and 100.09079.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785310235774,&quot;completed_at&quot;:1785310350423,&quot;elapsed_seconds&quot;:8441.3},{&quot;candidate_index&quot;:67,&quot;id&quot;:&quot;cand_9ca46548844c&quot;,&quot;parent_id&quot;:&quot;cand_d9e6b508f714&quot;,&quot;commit_sha&quot;:&quot;e9cce2813de5b616884882640f22b8ea92680837&quot;,&quot;cycles&quot;:1473,&quot;score&quot;:100.294637,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:61,&quot;mcts_value_sum&quot;:6195.494,&quot;hypothesis&quot;:&quot;Separating final value readiness from final index readiness will overlap value writeback with the last parity/index update, reducing 1476 cycles to roughly 1474.&quot;,&quot;eval_summary&quot;:&quot;Independent value readiness lets value writeback overlap the final index chain, saving three cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1476 to 1473, raising score from 100.09079 to 100.29464.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785310433633,&quot;completed_at&quot;:1785310475837,&quot;elapsed_seconds&quot;:8566.7},{&quot;candidate_index&quot;:68,&quot;id&quot;:&quot;cand_64d84c4994a7&quot;,&quot;parent_id&quot;:&quot;cand_9ca46548844c&quot;,&quot;commit_sha&quot;:&quot;b193b1c34eb9a6dbd88f0e82f37569c7e2e37db4&quot;,&quot;cycles&quot;:1472,&quot;score&quot;:100.362772,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:60,&quot;mcts_value_sum&quot;:6095.199,&quot;hypothesis&quot;:&quot;Separating index-address readiness from index-data readiness will overlap the final index address calculation with parity and branch generation, reducing 1473 cycles to roughly 1472.&quot;,&quot;eval_summary&quot;:&quot;Releasing index-address computation at final-hash readiness hides one ALU stage while the store still waits for final index data, saving one cycle.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1473 to 1472, raising score from 100.29464 to 100.36277.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785310499260,&quot;completed_at&quot;:1785310612094,&quot;elapsed_seconds&quot;:8703.0},{&quot;candidate_index&quot;:69,&quot;id&quot;:&quot;cand_b0658b2a70d3&quot;,&quot;parent_id&quot;:&quot;cand_64d84c4994a7&quot;,&quot;commit_sha&quot;:&quot;73dd43abd8625686accc980bc5b30837b8a200b7&quot;,&quot;cycles&quot;:1472,&quot;score&quot;:100.362772,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.363,&quot;hypothesis&quot;:&quot;Prefetching each subsequent wave\u2019s inputs during the preceding wave\u2019s writeback tail will overlap load startup with stores and reduce 1472 cycles to roughly 1464.&quot;,&quot;eval_summary&quot;:&quot;Cross-wave prefetching successfully moved later input loads into preceding writeback DAGs, but store-gated refill did not shorten the official critical schedule.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1472 and 100.36277.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785310734818,&quot;completed_at&quot;:1785310851873,&quot;elapsed_seconds&quot;:8942.8},{&quot;candidate_index&quot;:70,&quot;id&quot;:&quot;cand_44ad96591887&quot;,&quot;parent_id&quot;:&quot;cand_64d84c4994a7&quot;,&quot;commit_sha&quot;:&quot;e1f6fc918b3d06844dcbca1aebde32475401608e&quot;,&quot;cycles&quot;:1472,&quot;score&quot;:100.362772,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.363,&quot;hypothesis&quot;:&quot;Scheduling successive vector waves in one DAG with per-slot scratch-reuse dependencies will overlap the final partial wave\u2019s computation with unfinished contexts from the first wave, reducing 1472 cycles to roughly 1445.&quot;,&quot;eval_summary&quot;:&quot;Combined-wave scheduling helps larger partial-wave workloads, but the official 16-round schedule already hides the remainder sufficiently, so broader overlap produced no canonical gain.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1472 and 100.36277.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785310993796,&quot;completed_at&quot;:1785311102467,&quot;elapsed_seconds&quot;:9193.4},{&quot;candidate_index&quot;:71,&quot;id&quot;:&quot;cand_443033824b66&quot;,&quot;parent_id&quot;:&quot;cand_64d84c4994a7&quot;,&quot;commit_sha&quot;:&quot;122fb282d4766809d66842dae649ff6f4110a7d1&quot;,&quot;cycles&quot;:1466,&quot;score&quot;:100.773533,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:57,&quot;mcts_value_sum&quot;:5794.111,&quot;hypothesis&quot;:&quot;Using the two-VALU child-plus-one update only on terminal depth-two and general rounds will avoid the single-slot flow bottleneck at writeback, reducing 1472 cycles to roughly 1467.&quot;,&quot;eval_summary&quot;:&quot;Terminal index updates benefit from the wider VALU engine because their flow work cannot be hidden by a following round, saving six cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1472 to 1466, raising score from 100.36277 to 100.77353.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785311134924,&quot;completed_at&quot;:1785311238052,&quot;elapsed_seconds&quot;:9329.0},{&quot;candidate_index&quot;:72,&quot;id&quot;:&quot;cand_72717e4367c6&quot;,&quot;parent_id&quot;:&quot;cand_443033824b66&quot;,&quot;commit_sha&quot;:&quot;7738b2c907a82c7d51ddcc0d8e102fc3dab22021&quot;,&quot;cycles&quot;:1466,&quot;score&quot;:100.773533,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.774,&quot;hypothesis&quot;:&quot;Preloading nodes 0\u20137 beside the header vload will remove the first-wave depth-two cache load, reducing 1466 cycles to roughly 1465.&quot;,&quot;eval_summary&quot;:&quot;The shallow-cache load was removed successfully, but it was already hidden behind other initialization work and was not on the canonical critical path.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1466 and 100.77353.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785311379877,&quot;completed_at&quot;:1785311477250,&quot;elapsed_seconds&quot;:9568.2},{&quot;candidate_index&quot;:73,&quot;id&quot;:&quot;cand_fae7538727c3&quot;,&quot;parent_id&quot;:&quot;cand_443033824b66&quot;,&quot;commit_sha&quot;:&quot;ae9b171717b9607a545df52fc53d95faf76989e5&quot;,&quot;cycles&quot;:1465,&quot;score&quot;:100.842321,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:55,&quot;mcts_value_sum&quot;:5592.564,&quot;hypothesis&quot;:&quot;Reusing the terminal round\u2019s dead node-value vector for writeback addresses will overlap both address calculations with the final hash, reducing 1466 cycles to roughly 1464.&quot;,&quot;eval_summary&quot;:&quot;Dead terminal node-value scratch safely holds writeback addresses, hiding their ALU work behind the final hash and saving one cycle.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1466 to 1465, raising score from 100.77353 to 100.84232.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785311515526,&quot;completed_at&quot;:1785311573776,&quot;elapsed_seconds&quot;:9664.7},{&quot;candidate_index&quot;:74,&quot;id&quot;:&quot;cand_9ba2474cd68c&quot;,&quot;parent_id&quot;:&quot;cand_fae7538727c3&quot;,&quot;commit_sha&quot;:null,&quot;cycles&quot;:null,&quot;score&quot;:null,&quot;status&quot;:&quot;failed&quot;,&quot;decision&quot;:null,&quot;mcts_visits&quot;:0,&quot;mcts_value_sum&quot;:0.0,&quot;hypothesis&quot;:&quot;Compacting reusable vector scratch to raise wave_size from 30 to 31 will reduce the final partial wave from two contexts to one, lowering 1465 cycles to roughly 1455.&quot;,&quot;eval_summary&quot;:null,&quot;decision_reason&quot;:null,&quot;error&quot;:&quot;candidate workspace is unchanged&quot;,&quot;created_at&quot;:1785311719944,&quot;completed_at&quot;:1785311808255,&quot;elapsed_seconds&quot;:9899.2},{&quot;candidate_index&quot;:75,&quot;id&quot;:&quot;cand_6f6644fb718b&quot;,&quot;parent_id&quot;:&quot;cand_fae7538727c3&quot;,&quot;commit_sha&quot;:&quot;e71dbb4380049132a654ac25b0ff00f5a3eb8014&quot;,&quot;cycles&quot;:1470,&quot;score&quot;:100.49932,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.499,&quot;hypothesis&quot;:&quot;Using the two-VALU child-plus-one update on the round immediately before a terminal general gather will release final-round gather addresses from the serialized flow queue, reducing 1465 cycles to roughly 1461.&quot;,&quot;eval_summary&quot;:&quot;Unlike terminal updates, preterminal updates still overlap subsequent gather work; moving them to VALU adds critical engine pressure and costs five cycles.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1465 to 1470 and score fell from 100.84232 to 100.49932.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785311863972,&quot;completed_at&quot;:1785311975707,&quot;elapsed_seconds&quot;:10066.6},{&quot;candidate_index&quot;:76,&quot;id&quot;:&quot;cand_a6fd11661ed6&quot;,&quot;parent_id&quot;:&quot;cand_fae7538727c3&quot;,&quot;commit_sha&quot;:&quot;1b286f0b06d006030b3c1a35bd31e6f24304f05b&quot;,&quot;cycles&quot;:1465,&quot;score&quot;:100.842321,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.842,&quot;hypothesis&quot;:&quot;Using two-VALU child-plus-one updates for all non-root rounds in a short final vector wave will exploit its idle VALU slots and remove serialized flow work, reducing 1465 cycles to roughly 1455.&quot;,&quot;eval_summary&quot;:&quot;The short final wave had enough spare capacity to absorb the VALU updates, but removing its flow branch codes did not shorten the canonical critical path.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles and score remained unchanged at 1465 and 100.84232.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785312035136,&quot;completed_at&quot;:1785312089841,&quot;elapsed_seconds&quot;:10180.8},{&quot;candidate_index&quot;:77,&quot;id&quot;:&quot;cand_f7012044e268&quot;,&quot;parent_id&quot;:&quot;cand_fae7538727c3&quot;,&quot;commit_sha&quot;:&quot;a9708856f9631370b1b2845485b2c75a40e0ef6a&quot;,&quot;cycles&quot;:1465,&quot;score&quot;:100.842321,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.842,&quot;hypothesis&quot;:&quot;Prioritizing ready terminal parity and index-update nodes will overlap index stores with unfinished final hashes, reducing 1465 cycles to roughly 1462.&quot;,&quot;eval_summary&quot;:&quot;Terminal index chains were not the remaining scheduling bottleneck; prioritizing them changed ordering without shortening the critical path.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles and score remained unchanged at 1465 and 100.84232.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785312127095,&quot;completed_at&quot;:1785312166099,&quot;elapsed_seconds&quot;:10257.0},{&quot;candidate_index&quot;:78,&quot;id&quot;:&quot;cand_bdcfe0d811e2&quot;,&quot;parent_id&quot;:&quot;cand_fae7538727c3&quot;,&quot;commit_sha&quot;:&quot;b99aa2dd4ef3fa4e107ecaaaa21b5e73dd35cca5&quot;,&quot;cycles&quot;:1465,&quot;score&quot;:100.842321,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.842,&quot;hypothesis&quot;:&quot;Deferring the forest-pointer vector broadcast into the first-wave DAG will overlap it with input loads and remove one setup VALU slot, reducing 1465 cycles to roughly 1464.&quot;,&quot;eval_summary&quot;:&quot;The forest-pointer broadcast was already hidden in setup; deferring it changed placement without shortening the critical path.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles and score remained unchanged at 1465 and 100.84232.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785312285725,&quot;completed_at&quot;:1785312338655,&quot;elapsed_seconds&quot;:10429.6},{&quot;candidate_index&quot;:79,&quot;id&quot;:&quot;cand_d5322884631d&quot;,&quot;parent_id&quot;:&quot;cand_fae7538727c3&quot;,&quot;commit_sha&quot;:&quot;4bb3268051ae971720ac925242ba719af8a1dffc&quot;,&quot;cycles&quot;:1517,&quot;score&quot;:97.38563,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:97.386,&quot;hypothesis&quot;:&quot;Preserving root parity through the following depth-one hash will eliminate the depth-two group comparison, reducing 1465 cycles to roughly 1455.&quot;,&quot;eval_summary&quot;:&quot;Removing one comparison was overwhelmed by long-lived parity and scratch dependencies, which disrupted scheduling and cost 52 cycles.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1465 to 1517 and score fell from 100.84232 to 97.38563.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785312409823,&quot;completed_at&quot;:1785312490971,&quot;elapsed_seconds&quot;:10581.9},{&quot;candidate_index&quot;:80,&quot;id&quot;:&quot;cand_e1e13410f750&quot;,&quot;parent_id&quot;:&quot;cand_fae7538727c3&quot;,&quot;commit_sha&quot;:&quot;afd1d8d6e3b79721e3a15b8df8643d32ece899a9&quot;,&quot;cycles&quot;:1464,&quot;score&quot;:100.911202,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:49,&quot;mcts_value_sum&quot;:4991.31,&quot;hypothesis&quot;:&quot;Classifying the depth-two cache group from the pre-increment child will overlap that comparison with the final index add, reducing 1465 cycles to roughly 1462.&quot;,&quot;eval_summary&quot;:&quot;Classifying the cache group from the pre-increment child safely shortens depth-two cache readiness and saves one cycle.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1465 to 1464, raising score from 100.84232 to 100.91120.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785312619675,&quot;completed_at&quot;:1785312802880,&quot;elapsed_seconds&quot;:10893.8},{&quot;candidate_index&quot;:81,&quot;id&quot;:&quot;cand_11c85d0623e2&quot;,&quot;parent_id&quot;:&quot;cand_e1e13410f750&quot;,&quot;commit_sha&quot;:&quot;16d8e3f223fd28be80ca267c30cfc4b3541268fe&quot;,&quot;cycles&quot;:1466,&quot;score&quot;:100.773533,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.774,&quot;hypothesis&quot;:&quot;Writing the nonterminal depth-one child into idle node-address scratch will let the cache-group comparison and final index add issue in parallel, reducing 1464 cycles to roughly 1462.&quot;,&quot;eval_summary&quot;:&quot;node_addresses aliases tmp2; preserving high_selected required an ordering edge whose scheduling cost outweighed parallelizing the comparison and index add.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1464 to 1466 and score fell from 100.91120 to 100.77353.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785312825618,&quot;completed_at&quot;:1785312938427,&quot;elapsed_seconds&quot;:11029.3},{&quot;candidate_index&quot;:82,&quot;id&quot;:&quot;cand_5783ae518123&quot;,&quot;parent_id&quot;:&quot;cand_e1e13410f750&quot;,&quot;commit_sha&quot;:&quot;788e237703c4ced11b01cadef2765a7661d20fe3&quot;,&quot;cycles&quot;:1464,&quot;score&quot;:100.911202,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.911,&quot;hypothesis&quot;:&quot;Fusing the fifth hash stage into one multiply_add will remove two VALU operations per context-round, reducing 1464 cycles to roughly 1295.&quot;,&quot;eval_summary&quot;:&quot;The explicit fifth-stage multiply_add is an honest duplicate of the existing generalized hash fusion and adds no performance value.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles and score remained unchanged at 1464 and 100.91120 because the parent already fused this stage through fused_hash_multipliers.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785312989690,&quot;completed_at&quot;:1785313043171,&quot;elapsed_seconds&quot;:11134.1},{&quot;candidate_index&quot;:83,&quot;id&quot;:&quot;cand_8edd176c5c79&quot;,&quot;parent_id&quot;:&quot;cand_e1e13410f750&quot;,&quot;commit_sha&quot;:&quot;7ed66f9a375c4f5360d01ff3c4259e76a3a879f6&quot;,&quot;cycles&quot;:1467,&quot;score&quot;:100.70484,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.705,&quot;hypothesis&quot;:&quot;Classifying the depth-two cache group from the current depth-one index before hashing will hide the comparison behind the hash and reduce 1464 cycles to roughly 1458.&quot;,&quot;eval_summary&quot;:&quot;Hoisting the group comparison behind hashing required a parity ordering edge that disrupted scheduling and cost three cycles.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1464 to 1467 and score fell from 100.91120 to 100.70484.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785313081661,&quot;completed_at&quot;:1785313144787,&quot;elapsed_seconds&quot;:11235.7},{&quot;candidate_index&quot;:84,&quot;id&quot;:&quot;cand_eea985bf71e4&quot;,&quot;parent_id&quot;:&quot;cand_e1e13410f750&quot;,&quot;commit_sha&quot;:&quot;fa2a4853aac8840eb392e7bc62f42bfa1f013f9c&quot;,&quot;cycles&quot;:1464,&quot;score&quot;:100.911202,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.911,&quot;hypothesis&quot;:&quot;Pipelining DAG debug comparisons into the following VLIW packet will eliminate most debug-only cycles, reducing 1464 cycles to roughly 1260 without removing any checks.&quot;,&quot;eval_summary&quot;:&quot;Debug comparisons can be safely pipelined, but their packet placement offers no performance benefit.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles and score remained unchanged at 1464 and 100.91120 because debug-only packets do not affect effective cycle accounting.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785313183421,&quot;completed_at&quot;:1785313231756,&quot;elapsed_seconds&quot;:11322.7},{&quot;candidate_index&quot;:85,&quot;id&quot;:&quot;cand_10e1d5439489&quot;,&quot;parent_id&quot;:&quot;cand_e1e13410f750&quot;,&quot;commit_sha&quot;:&quot;297690d5eb8e6d5d6a6f5fa0a29c091de84592b1&quot;,&quot;cycles&quot;:1464,&quot;score&quot;:100.911202,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:100.911,&quot;hypothesis&quot;:&quot;Hoisting the terminal index base `2 * index + 1` before the final hash will leave only a parity add after hashing, reducing 1464 cycles to roughly 1458.&quot;,&quot;eval_summary&quot;:&quot;Hoisting the terminal index base helps shorter workloads, but the official full-scale schedule already hides the original post-hash chain.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1464 and 100.91120.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785313273266,&quot;completed_at&quot;:1785313349814,&quot;elapsed_seconds&quot;:11440.7},{&quot;candidate_index&quot;:86,&quot;id&quot;:&quot;cand_52a72f53d164&quot;,&quot;parent_id&quot;:&quot;cand_e1e13410f750&quot;,&quot;commit_sha&quot;:&quot;439b5b47a699d483fc3b93f193aec5c7f7baadea&quot;,&quot;cycles&quot;:1433,&quot;score&quot;:103.094208,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:43,&quot;mcts_value_sum&quot;:4386.186,&quot;hypothesis&quot;:&quot;Offloading one XOR-hash shift from VALU to otherwise underused scalar ALU lanes will reduce VALU pressure and lower 1464 cycles to roughly 1390.&quot;,&quot;eval_summary&quot;:&quot;Offloading one hash shift to spare scalar ALU capacity effectively rebalanced engine pressure and saved 31 cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1464 to 1433, raising score from 100.91120 to 103.09421.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785313385660,&quot;completed_at&quot;:1785313439932,&quot;elapsed_seconds&quot;:11530.8},{&quot;candidate_index&quot;:87,&quot;id&quot;:&quot;cand_a3dbb92681d3&quot;,&quot;parent_id&quot;:&quot;cand_52a72f53d164&quot;,&quot;commit_sha&quot;:&quot;00204cd9a0ddb3a8027af512496d64e890512abe&quot;,&quot;cycles&quot;:1403,&quot;score&quot;:105.298646,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:42,&quot;mcts_value_sum&quot;:4283.092,&quot;hypothesis&quot;:&quot;Offloading the fourth hash stage\u2019s left shift as a second scalar-ALU shift will further rebalance VALU pressure, reducing 1433 cycles to roughly 1405.&quot;,&quot;eval_summary&quot;:&quot;A second scalarized hash shift used remaining ALU headroom effectively and saved another 30 cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1433 to 1403, raising score from 103.09421 to 105.29865.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785313458915,&quot;completed_at&quot;:1785313501976,&quot;elapsed_seconds&quot;:11592.9},{&quot;candidate_index&quot;:88,&quot;id&quot;:&quot;cand_0f32fb805b9b&quot;,&quot;parent_id&quot;:&quot;cand_a3dbb92681d3&quot;,&quot;commit_sha&quot;:&quot;3666b3d65de549f5ffdaef965f94a15ed1c0fce3&quot;,&quot;cycles&quot;:1391,&quot;score&quot;:106.207045,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:7,&quot;mcts_value_sum&quot;:639.237,&quot;hypothesis&quot;:&quot;Scalarizing the sixth-stage shift for two of every five vector contexts will balance the remaining VALU and ALU demand, reducing 1403 cycles to roughly 1388.&quot;,&quot;eval_summary&quot;:&quot;A two-of-five scalar split used the remaining ALU headroom and saved 12 cycles without creating a new bottleneck.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1403 to 1391, raising score from 105.29865 to 106.20705.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785313529043,&quot;completed_at&quot;:1785313610385,&quot;elapsed_seconds&quot;:11701.3},{&quot;candidate_index&quot;:89,&quot;id&quot;:&quot;cand_02c2f17f68b6&quot;,&quot;parent_id&quot;:&quot;cand_0f32fb805b9b&quot;,&quot;commit_sha&quot;:&quot;9615fe011fa67db4c33c3e70e3f5c56ace510723&quot;,&quot;cycles&quot;:1389,&quot;score&quot;:106.359971,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:6,&quot;mcts_value_sum&quot;:533.03,&quot;hypothesis&quot;:&quot;Increasing sixth-stage scalarization from 40% to alternating vector contexts will absorb remaining non-hash VALU pressure, reducing 1391 cycles to roughly 1385.&quot;,&quot;eval_summary&quot;:&quot;Alternating sixth-stage scalarization better balances residual ALU/VALU pressure and saves two cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1391 to 1389, raising score from 106.20705 to 106.35997.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785313651448,&quot;completed_at&quot;:1785313741378,&quot;elapsed_seconds&quot;:11832.3},{&quot;candidate_index&quot;:90,&quot;id&quot;:&quot;cand_38997e133ecd&quot;,&quot;parent_id&quot;:&quot;cand_02c2f17f68b6&quot;,&quot;commit_sha&quot;:&quot;a18de75d21f892a9cccb378f602d4bcd3d294d93&quot;,&quot;cycles&quot;:1386,&quot;score&quot;:106.590188,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:5,&quot;mcts_value_sum&quot;:426.67,&quot;hypothesis&quot;:&quot;Scalarizing the sixth-stage shift for every context only on terminal non-wrap rounds will offload the terminal round\u2019s extra parity and index VALU pressure, reducing 1389 cycles to roughly 1386.&quot;,&quot;eval_summary&quot;:&quot;Full terminal non-wrap scalarization absorbs extra terminal VALU pressure and saves three cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1389 to 1386, raising score from 106.35997 to 106.59019.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785313792917,&quot;completed_at&quot;:1785313838703,&quot;elapsed_seconds&quot;:11929.6},{&quot;candidate_index&quot;:91,&quot;id&quot;:&quot;cand_49445aca382b&quot;,&quot;parent_id&quot;:&quot;cand_38997e133ecd&quot;,&quot;commit_sha&quot;:&quot;ba255284d497a95b409d315b50626deaef505100&quot;,&quot;cycles&quot;:1383,&quot;score&quot;:106.821403,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:4,&quot;mcts_value_sum&quot;:320.079,&quot;hypothesis&quot;:&quot;Fully scalarizing the sixth-stage shift on nonterminal depth-one rounds will offset their extra cache-group and two-step index VALU work, reducing 1386 cycles to roughly 1381.&quot;,&quot;eval_summary&quot;:&quot;Full sixth-stage scalarization offsets depth-one cache/index VALU pressure and saves three cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1386 to 1383, raising score from 106.59019 to 106.82140.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785313860386,&quot;completed_at&quot;:1785313907056,&quot;elapsed_seconds&quot;:11998.0},{&quot;candidate_index&quot;:92,&quot;id&quot;:&quot;cand_db3efd6661f3&quot;,&quot;parent_id&quot;:&quot;cand_49445aca382b&quot;,&quot;commit_sha&quot;:&quot;487b6d75701e35dde40b932b6608d899d5ee8927&quot;,&quot;cycles&quot;:1383,&quot;score&quot;:106.821403,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:106.821,&quot;hypothesis&quot;:&quot;Increasing ordinary-round sixth-stage scalarization from one-half to three-of-five contexts will absorb remaining parity VALU pressure, reducing 1383 cycles to roughly 1381.&quot;,&quot;eval_summary&quot;:&quot;Ordinary rounds were already sufficiently balanced at 50% sixth-stage scalarization; increasing to 60% provided no canonical gain.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1383 and 106.82140.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785313967078,&quot;completed_at&quot;:1785314008224,&quot;elapsed_seconds&quot;:12099.1},{&quot;candidate_index&quot;:93,&quot;id&quot;:&quot;cand_7ca4499c9e5e&quot;,&quot;parent_id&quot;:&quot;cand_49445aca382b&quot;,&quot;commit_sha&quot;:&quot;d34435946e376230af71a518b626d7bc23497c91&quot;,&quot;cycles&quot;:1388,&quot;score&quot;:106.436599,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:106.437,&quot;hypothesis&quot;:&quot;Using the two-VALU child-plus-one index update on ordinary contexts whose sixth-stage shift is scalarized will spend their freed VALU capacity to remove flow selections, reducing 1383 cycles to roughly 1377.&quot;,&quot;eval_summary&quot;:&quot;The freed hash VALU capacity was insufficient for extra index operations; retaining flow selections is faster on ordinary rounds.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1383 to 1388 and score fell from 106.82140 to 106.43660.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785314058072,&quot;completed_at&quot;:1785314122157,&quot;elapsed_seconds&quot;:12213.1},{&quot;candidate_index&quot;:94,&quot;id&quot;:&quot;cand_4e2aa9be4b59&quot;,&quot;parent_id&quot;:&quot;cand_49445aca382b&quot;,&quot;commit_sha&quot;:&quot;33093cccec51d1d8b2f100c5ec44792ddeef8bf7&quot;,&quot;cycles&quot;:null,&quot;score&quot;:0.0,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:0.0,&quot;hypothesis&quot;:&quot;Writing the nonterminal depth-one child into dead parity scratch will let its group comparison and next-index add issue together without delaying high-pair selection, reducing 1383 cycles to roughly 1381.&quot;,&quot;eval_summary&quot;:&quot;Parity scratch is live through both pair selections, so it cannot safely hold the depth-one child.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness failed because tmp1 still carries parity for low_selected; overwriting it with child corrupts the depth-two cache selection.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785314156129,&quot;completed_at&quot;:1785314292270,&quot;elapsed_seconds&quot;:12383.2},{&quot;candidate_index&quot;:95,&quot;id&quot;:&quot;cand_82c9f3d76c87&quot;,&quot;parent_id&quot;:&quot;cand_a3dbb92681d3&quot;,&quot;commit_sha&quot;:&quot;cf3913276c819e000de2116a34262e6304649b24&quot;,&quot;cycles&quot;:1383,&quot;score&quot;:106.821403,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:34,&quot;mcts_value_sum&quot;:3538.557,&quot;hypothesis&quot;:&quot;Round-aware scalarization of the sixth stage\u2019s first XOR, rather than its shift, will balance ALU/VALU pressure while releasing tmp1 earlier, reducing 1403 cycles to roughly 1379.&quot;,&quot;eval_summary&quot;:&quot;Scalarizing the sixth-stage first XOR provides an alternative dependency topology that saves 20 cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1403 to 1383, raising score from 105.29865 to 106.82140 and matching the current best.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785314327662,&quot;completed_at&quot;:1785314385562,&quot;elapsed_seconds&quot;:12476.5},{&quot;candidate_index&quot;:96,&quot;id&quot;:&quot;cand_a446a69d5eb9&quot;,&quot;parent_id&quot;:&quot;cand_82c9f3d76c87&quot;,&quot;commit_sha&quot;:&quot;bbd4f2d537eca316452e1c6313534a2d9d0f6161&quot;,&quot;cycles&quot;:1384,&quot;score&quot;:106.74422,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:106.744,&quot;hypothesis&quot;:&quot;Rotating ordinary sixth-stage first-XOR scalarization by round will prevent the same contexts from remaining ALU-heavy across their dependency chains, reducing 1383 cycles to roughly 1379.&quot;,&quot;eval_summary&quot;:&quot;Stable per-context engine routing schedules better than alternating the scalar-first path by round.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1383 to 1384 and score fell from 106.82140 to 106.74422.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785314429106,&quot;completed_at&quot;:1785314482525,&quot;elapsed_seconds&quot;:12573.4},{&quot;candidate_index&quot;:97,&quot;id&quot;:&quot;cand_34aeb2e963ad&quot;,&quot;parent_id&quot;:&quot;cand_82c9f3d76c87&quot;,&quot;commit_sha&quot;:&quot;58eb4a5f2c1f2a89158dd8add42b91f176f405f5&quot;,&quot;cycles&quot;:1383,&quot;score&quot;:106.821403,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:106.821,&quot;hypothesis&quot;:&quot;Splitting special-round sixth-stage offloads between first XOR on even contexts and shift on odd contexts will preserve engine balance while staggering scratch readiness, reducing 1383 cycles to roughly 1379.&quot;,&quot;eval_summary&quot;:&quot;Distributing special-round offloads across tmp1 and tmp2 changes readiness order but not the canonical critical path.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1383 and 106.82140.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785314503117,&quot;completed_at&quot;:1785314556267,&quot;elapsed_seconds&quot;:12647.2},{&quot;candidate_index&quot;:98,&quot;id&quot;:&quot;cand_c0c28baf51c5&quot;,&quot;parent_id&quot;:&quot;cand_82c9f3d76c87&quot;,&quot;commit_sha&quot;:&quot;61d52d448c78c44c1a8f2577f1e4bb810fcbc918&quot;,&quot;cycles&quot;:1376,&quot;score&quot;:107.364826,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:31,&quot;mcts_value_sum&quot;:3218.17,&quot;hypothesis&quot;:&quot;Scalarizing post-hash parity for odd ordinary contexts will use ALU capacity after their hash chain instead of clustering another offload inside stage six, reducing 1383 cycles to roughly 1376.&quot;,&quot;eval_summary&quot;:&quot;Post-hash scalar parity effectively uses late ALU headroom, relieving VALU pressure and saving seven cycles.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1383 to 1376, raising score from 106.82140 to 107.36483.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785314584930,&quot;completed_at&quot;:1785314718101,&quot;elapsed_seconds&quot;:12809.0},{&quot;candidate_index&quot;:99,&quot;id&quot;:&quot;cand_3fa7710a2244&quot;,&quot;parent_id&quot;:&quot;cand_c0c28baf51c5&quot;,&quot;commit_sha&quot;:&quot;3a132757e035b152375f86f713171e459a79169c&quot;,&quot;cycles&quot;:1375,&quot;score&quot;:107.442909,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:30,&quot;mcts_value_sum&quot;:3110.805,&quot;hypothesis&quot;:&quot;Scalarizing parity for odd nonterminal depth-one contexts will offset their extra child, group-comparison, and index-update VALU work, reducing 1376 cycles to roughly 1374.&quot;,&quot;eval_summary&quot;:&quot;Odd depth-one parity can use late ALU headroom safely, yielding a one-cycle improvement.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1376 to 1375, raising score from 107.36483 to 107.44291.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785314753226,&quot;completed_at&quot;:1785314805581,&quot;elapsed_seconds&quot;:12896.5},{&quot;candidate_index&quot;:100,&quot;id&quot;:&quot;cand_d2f3540b34d4&quot;,&quot;parent_id&quot;:&quot;cand_3fa7710a2244&quot;,&quot;commit_sha&quot;:&quot;4c3c8b5ff668cc66dffda684c90df1baa77fa941&quot;,&quot;cycles&quot;:1385,&quot;score&quot;:106.667148,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:106.667,&quot;hypothesis&quot;:&quot;Scalarizing parity for odd terminal non-wrap contexts will relieve the terminal VALU-critical index update and reduce 1375 cycles to roughly 1374.&quot;,&quot;eval_summary&quot;:&quot;Terminal parity must remain on VALU; lane-wise ALU parity extends the exposed terminal dependency tail by ten cycles.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1375 to 1385 and score fell from 107.44291 to 106.66715.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785314816967,&quot;completed_at&quot;:1785314863450,&quot;elapsed_seconds&quot;:12954.4},{&quot;candidate_index&quot;:101,&quot;id&quot;:&quot;cand_5c41123cbd0f&quot;,&quot;parent_id&quot;:&quot;cand_3fa7710a2244&quot;,&quot;commit_sha&quot;:&quot;f8bc41aaf3cb855b23d34845de31c867afbbbcaa&quot;,&quot;cycles&quot;:1376,&quot;score&quot;:107.364826,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.365,&quot;hypothesis&quot;:&quot;Keeping the sixth-stage first XOR on VALU for odd nonterminal depth-one contexts will remove their double ALU offload while retaining scalar parity, reducing 1375 cycles to roughly 1372.&quot;,&quot;eval_summary&quot;:&quot;The double ALU offload on odd depth-one contexts is beneficial; restoring their first XOR to VALU costs one cycle.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1375 to 1376 and score fell from 107.44291 to 107.36483.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785314887702,&quot;completed_at&quot;:1785314932652,&quot;elapsed_seconds&quot;:13023.6},{&quot;candidate_index&quot;:102,&quot;id&quot;:&quot;cand_71513993ca85&quot;,&quot;parent_id&quot;:&quot;cand_3fa7710a2244&quot;,&quot;commit_sha&quot;:&quot;4ffd968dc8475e5d1f79edd56b2bd5eacdfb16b0&quot;,&quot;cycles&quot;:1395,&quot;score&quot;:105.902509,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:105.903,&quot;hypothesis&quot;:&quot;Scalarizing parity for every nonterminal depth-one context will extend the beneficial double ALU offload to even contexts, reducing 1375 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Even depth-one contexts lack ALU headroom for scalar parity; the added lane work creates a severe ALU bottleneck.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1375 to 1395 and score fell from 107.44291 to 105.90251.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785314947367,&quot;completed_at&quot;:1785314995443,&quot;elapsed_seconds&quot;:13086.4},{&quot;candidate_index&quot;:103,&quot;id&quot;:&quot;cand_f3fc2e0d3f8c&quot;,&quot;parent_id&quot;:&quot;cand_3fa7710a2244&quot;,&quot;commit_sha&quot;:&quot;e47abcaf6acc3057e72fa074c2e10d2cdb1f46a9&quot;,&quot;cycles&quot;:1375,&quot;score&quot;:107.442909,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.443,&quot;hypothesis&quot;:&quot;Prioritizing all eight scalar parity lanes as one critical readiness group will prevent partial parity issue behind unrelated ALU work, reducing 1375 cycles to roughly 1372.&quot;,&quot;eval_summary&quot;:&quot;Scalar parity lanes were already scheduled effectively; an explicit priority tie-break does not alter the critical path.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1375 and 107.44291.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785315040726,&quot;completed_at&quot;:1785315091273,&quot;elapsed_seconds&quot;:13182.2},{&quot;candidate_index&quot;:104,&quot;id&quot;:&quot;cand_a966b93a7727&quot;,&quot;parent_id&quot;:&quot;cand_3fa7710a2244&quot;,&quot;commit_sha&quot;:&quot;644e6cb62ab0efe4f8a5363d797b85f3ea8bc1de&quot;,&quot;cycles&quot;:1379,&quot;score&quot;:107.131255,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.131,&quot;hypothesis&quot;:&quot;Replacing odd nonterminal root contexts\u2019 branch-code vselect with a VALU parity-plus-one will use their freed parity VALU slot and reduce root flow contention, lowering 1375 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Root flow vselects are preferable; parity-plus-one adds harmful VALU contention and costs four cycles.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1375 to 1379 and score fell from 107.44291 to 107.13125.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785315119336,&quot;completed_at&quot;:1785315176595,&quot;elapsed_seconds&quot;:13267.5},{&quot;candidate_index&quot;:105,&quot;id&quot;:&quot;cand_355e6b7097c3&quot;,&quot;parent_id&quot;:&quot;cand_3fa7710a2244&quot;,&quot;commit_sha&quot;:&quot;34c03a3ebc5536d5358ebd03f087be12d0a73d13&quot;,&quot;cycles&quot;:1377,&quot;score&quot;:107.286855,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.287,&quot;hypothesis&quot;:&quot;Scalarizing parity for one of every four even depth-one contexts will use the small remaining ALU headroom without reproducing the full-even bottleneck, reducing 1375 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Depth-one ALU headroom is exhausted; even a sparse even-context parity offload costs two cycles.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1375 to 1377 and score fell from 107.44291 to 107.28686.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785315202747,&quot;completed_at&quot;:1785315266719,&quot;elapsed_seconds&quot;:13357.6},{&quot;candidate_index&quot;:106,&quot;id&quot;:&quot;cand_b27409d8c225&quot;,&quot;parent_id&quot;:&quot;cand_3fa7710a2244&quot;,&quot;commit_sha&quot;:&quot;efd1600da0f5f01b8aa5deec7fddd91dc97b64a5&quot;,&quot;cycles&quot;:1374,&quot;score&quot;:107.521106,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;keep&quot;,&quot;mcts_visits&quot;:23,&quot;mcts_value_sum&quot;:2361.567,&quot;hypothesis&quot;:&quot;Scalarizing parity for only half of odd depth-one contexts will retain VALU relief while reducing marginal ALU contention, lowering 1375 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Halving odd depth-one scalar parity better balances ALU and VALU pressure, saving one cycle.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness passed and cycles dropped from 1375 to 1374, raising score from 107.44291 to 107.52111.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785315278693,&quot;completed_at&quot;:1785315330801,&quot;elapsed_seconds&quot;:13421.7},{&quot;candidate_index&quot;:107,&quot;id&quot;:&quot;cand_ef47356a5794&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;88a45596b0e662d76cba68b6f2a683e6248b1aff&quot;,&quot;cycles&quot;:1375,&quot;score&quot;:107.442909,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.443,&quot;hypothesis&quot;:&quot;Selecting the later odd ordinal in each four-context block for depth-one scalar parity will reduce ALU overlap, lowering 1374 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Residue-one depth-one contexts align better with available ALU slots; shifting to residue three costs one cycle.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1375 and score fell from 107.52111 to 107.44291.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785315344986,&quot;completed_at&quot;:1785315404066,&quot;elapsed_seconds&quot;:13495.0},{&quot;candidate_index&quot;:108,&quot;id&quot;:&quot;cand_1694424c8590&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;4e480ed06254e870ef2aa40fd047df349083ef8a&quot;,&quot;cycles&quot;:1378,&quot;score&quot;:107.208999,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.209,&quot;hypothesis&quot;:&quot;Scalarizing three of four odd depth-one ordinals will add VALU relief while excluding the latest, most collision-prone residue, reducing 1374 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Scalarizing 75% of odd depth-one contexts creates excess ALU contention; the parent\u2019s 50% residue-one routing remains better balanced.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1378 and score fell from 107.52111 to 107.20900.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785315421690,&quot;completed_at&quot;:1785315513042,&quot;elapsed_seconds&quot;:13604.0},{&quot;candidate_index&quot;:109,&quot;id&quot;:&quot;cand_72a1f217e593&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;7ab8c58938efcda4622df4b761761db770590910&quot;,&quot;cycles&quot;:1376,&quot;score&quot;:107.364826,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.365,&quot;hypothesis&quot;:&quot;Scalarizing parity for only one quarter of odd depth-one contexts will preserve targeted VALU relief while further reducing ALU contention, lowering 1374 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Quarter-rate depth-one scalar parity provides too little VALU relief; the parent\u2019s half-rate residue-one routing remains the better balance.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1376 and score fell from 107.52111 to 107.36483.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785315551752,&quot;completed_at&quot;:1785315611652,&quot;elapsed_seconds&quot;:13702.6},{&quot;candidate_index&quot;:110,&quot;id&quot;:&quot;cand_1d7ba6453408&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;468ffdeca085360ea6427e5b23cf972e15394279&quot;,&quot;cycles&quot;:1376,&quot;score&quot;:107.364826,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.365,&quot;hypothesis&quot;:&quot;Concentrating odd-context scalar parity in the first nonterminal depth-one traversal will hide its ALU cost early while keeping later depth-one parity on VALU, reducing 1374 cycles to roughly 1372.&quot;,&quot;eval_summary&quot;:&quot;Temporal concentration is inferior to stable per-context routing; distributing half-rate scalar parity across every depth-one traversal remains better balanced.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1376 and score fell from 107.52111 to 107.36483.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785315685228,&quot;completed_at&quot;:1785315730867,&quot;elapsed_seconds&quot;:13821.8},{&quot;candidate_index&quot;:111,&quot;id&quot;:&quot;cand_f1a2342d43ff&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;3dbc77808e84a70bfc48a89558463f9b53a5617e&quot;,&quot;cycles&quot;:1377,&quot;score&quot;:107.286855,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.287,&quot;hypothesis&quot;:&quot;Staggering selected depth-one scalar parity into two four-lane waves will pair each wave with an eight-lane scalar hash operation, improving ALU packet utilization and reducing 1374 cycles to roughly 1372.&quot;,&quot;eval_summary&quot;:&quot;Independent parity lanes schedule better; forced four-lane waves extend parity readiness more than they improve ALU packing.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1377 and score fell from 107.52111 to 107.28686.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785315760427,&quot;completed_at&quot;:1785315821659,&quot;elapsed_seconds&quot;:13912.6},{&quot;candidate_index&quot;:112,&quot;id&quot;:&quot;cand_91ad87645d68&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;cd8c121ec124cd08193fcc4eca290d099fdfaa2b&quot;,&quot;cycles&quot;:1375,&quot;score&quot;:107.442909,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.443,&quot;hypothesis&quot;:&quot;Computing the depth-one cache-group predicate directly from the current index, in parallel with parity, will remove its dependency on child computation and reduce 1374 cycles to roughly 1372.&quot;,&quot;eval_summary&quot;:&quot;Early index-based group comparison adds exposed VALU contention; retaining the child-dependent comparison schedules one cycle faster.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1375 and score fell from 107.52111 to 107.44291.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785315869062,&quot;completed_at&quot;:1785315943074,&quot;elapsed_seconds&quot;:14034.0},{&quot;candidate_index&quot;:113,&quot;id&quot;:&quot;cand_c55239feb872&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;046ded283e1037f7780eae3fa26ac87f30f9cba9&quot;,&quot;cycles&quot;:1374,&quot;score&quot;:107.521106,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.521,&quot;hypothesis&quot;:&quot;Issuing the low depth-two cache-pair selection before the high pair will better align the depth-one flow chain with downstream selection, reducing 1374 cycles to roughly 1372.&quot;,&quot;eval_summary&quot;:&quot;Low-first and high-first cache-pair flow chains are equivalent on the canonical critical path; reversing scratch topology provides no benefit.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1374 and 107.52111.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785315986714,&quot;completed_at&quot;:1785316057512,&quot;elapsed_seconds&quot;:14148.4},{&quot;candidate_index&quot;:114,&quot;id&quot;:&quot;cand_2524414b2810&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;582505488a9347fc7a50121634886383ee52c7a7&quot;,&quot;cycles&quot;:1380,&quot;score&quot;:107.053623,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.054,&quot;hypothesis&quot;:&quot;Prioritizing ready final depth-two cache-selection vselects will complete contexts before issuing more pair-selection flow work, reducing 1374 cycles to roughly 1372.&quot;,&quot;eval_summary&quot;:&quot;Strong completion priority disrupts productive flow scheduling; existing load-distance and depth heuristics outperform eager final cache selection.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1380 and score fell from 107.52111 to 107.05362.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785316099624,&quot;completed_at&quot;:1785316148526,&quot;elapsed_seconds&quot;:14239.4},{&quot;candidate_index&quot;:115,&quot;id&quot;:&quot;cand_fbd7deeff33c&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;1490e0ab99e495265cab8cd18ed8573950a1e46e&quot;,&quot;cycles&quot;:1374,&quot;score&quot;:107.521106,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.521,&quot;hypothesis&quot;:&quot;Pruning redundant depth-one dependencies will let pair-selection flow work advance independently of VALU child stalls, reducing 1374 cycles to roughly 1372.&quot;,&quot;eval_summary&quot;:&quot;The removed edges are semantically redundant but not schedule-limiting; transitive readiness already yields the same canonical critical path.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1374 and 107.52111.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785316186929,&quot;completed_at&quot;:1785316245255,&quot;elapsed_seconds&quot;:14336.2},{&quot;candidate_index&quot;:116,&quot;id&quot;:&quot;cand_b87e1dc8ed60&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;8d7d57d9038ef73e56312112d503e372afeaa373&quot;,&quot;cycles&quot;:1376,&quot;score&quot;:107.364826,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.365,&quot;hypothesis&quot;:&quot;Keeping only one scalarized operation on residue-one odd depth-one contexts will remove their remaining double ALU offload and reduce 1374 cycles to roughly 1372.&quot;,&quot;eval_summary&quot;:&quot;The remaining double ALU offload is beneficial; moving selected depth-one first XORs back to VALU increases contention and costs two cycles.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1376 and score fell from 107.52111 to 107.36483.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785316290300,&quot;completed_at&quot;:1785316347231,&quot;elapsed_seconds&quot;:14438.1},{&quot;candidate_index&quot;:117,&quot;id&quot;:&quot;cand_3754604461b4&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;1298bae67761f98252d979ae0caa672f2c11671f&quot;,&quot;cycles&quot;:1377,&quot;score&quot;:107.286855,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.287,&quot;hypothesis&quot;:&quot;Keeping terminal first XOR on VALU for odd residue-three contexts will shorten the exposed ALU tail while retaining scalar first XOR for the other three quarters, reducing 1374 cycles to roughly 1371.&quot;,&quot;eval_summary&quot;:&quot;Terminal scalar first-XOR routing is beneficial; moving odd residue-three contexts to VALU increases terminal contention and costs three cycles.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1377 and score fell from 107.52111 to 107.28686.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785316363617,&quot;completed_at&quot;:1785316479287,&quot;elapsed_seconds&quot;:14570.2},{&quot;candidate_index&quot;:118,&quot;id&quot;:&quot;cand_4c8ab1802735&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;db9bef4aeb834c5788f5e4ef87f01c3c91e39dda&quot;,&quot;cycles&quot;:1374,&quot;score&quot;:107.521106,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.521,&quot;hypothesis&quot;:&quot;Building residue-one contexts first within each four-context block on nonterminal depth-one rounds will expose their extra scalar parity work earlier, reducing 1374 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Advancing residue-one DAG creation does not affect the canonical critical path; existing scheduling heuristics neutralize this context-order tie change.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1374 and 107.52111.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785316614056,&quot;completed_at&quot;:1785316682553,&quot;elapsed_seconds&quot;:14773.5},{&quot;candidate_index&quot;:119,&quot;id&quot;:&quot;cand_d97eb6ac75d5&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;00e794994794bec7ae32416e1b2e30b124aff975&quot;,&quot;cycles&quot;:1378,&quot;score&quot;:107.208999,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.209,&quot;hypothesis&quot;:&quot;Replacing the depth-one final index increment with a flow-selected branch code will remove one VALU operation from the depth-one path, reducing 1374 cycles to roughly 1372.&quot;,&quot;eval_summary&quot;:&quot;Moving depth-one branch-code construction from VALU to the already busy flow chain costs four cycles; the original parity-based multiply_add plus VALU increment schedules better.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1378 and score fell from 107.52111 to 107.20900.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785316743414,&quot;completed_at&quot;:1785316968695,&quot;elapsed_seconds&quot;:15059.6},{&quot;candidate_index&quot;:120,&quot;id&quot;:&quot;cand_50ff07ad88ef&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;d702f09006ce5565eb4f5adda72f670d74330d7e&quot;,&quot;cycles&quot;:1374,&quot;score&quot;:107.521106,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.521,&quot;hypothesis&quot;:&quot;Scalarizing the depth-one cache-group comparison for odd residue-three contexts will relieve late VALU contention while using their available ALU headroom, reducing 1374 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Residue-three scalar group comparisons fit available ALU capacity but do not shorten the critical path; the original VALU comparison is equally fast.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1374 and 107.52111.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785317025508,&quot;completed_at&quot;:1785317088148,&quot;elapsed_seconds&quot;:15179.1},{&quot;candidate_index&quot;:121,&quot;id&quot;:&quot;cand_21d769a3ac0c&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;ed162348a060a0bdefa708c4fb3d5ca01aa4fef7&quot;,&quot;cycles&quot;:1374,&quot;score&quot;:107.521106,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.521,&quot;hypothesis&quot;:&quot;Rotating ordinary-round scalar work from even/odd alternation to adjacent two-context phases will preserve ALU/VALU operation counts while reducing cross-context timing collisions, lowering 1374 cycles to roughly 1372.&quot;,&quot;eval_summary&quot;:&quot;Ordinary-round 0\u20131/2\u20133 phase grouping changes partial-wave behavior but not the frozen full-wave critical path; even/odd routing remains equally fast.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1374 and 107.52111.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785317134752,&quot;completed_at&quot;:1785317197090,&quot;elapsed_seconds&quot;:15288.0},{&quot;candidate_index&quot;:122,&quot;id&quot;:&quot;cand_38cb8c9d2468&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;d6d913cb3b6c3d383b3391c08a4541797e23ce01&quot;,&quot;cycles&quot;:1378,&quot;score&quot;:107.208999,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.209,&quot;hypothesis&quot;:&quot;Moving one scalar hash-shift group earlier for the selected residue-one depth-one contexts will preserve total ALU/VALU work while separating it from late scalar parity, reducing 1374 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;The original later scalar \u003c\u003c9 placement is better balanced; advancing that ALU work to \u003c\u003c5 creates harmful intermediate-stage contention and costs four cycles.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1378 and score fell from 107.52111 to 107.20900.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785317230010,&quot;completed_at&quot;:1785317288864,&quot;elapsed_seconds&quot;:15379.8},{&quot;candidate_index&quot;:123,&quot;id&quot;:&quot;cand_f02c26fc48e3&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;6348bd760274009bd6e9c43b390baee0376a6a97&quot;,&quot;cycles&quot;:1376,&quot;score&quot;:107.364826,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.365,&quot;hypothesis&quot;:&quot;Advancing the depth-one final index update ahead of cache-group comparison will make the next index ready one VALU cycle earlier without delaying cache selection, reducing 1374 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Cache-group readiness is more critical than early next-index readiness; preserving group comparison before the index increment saves two cycles.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1376 and score fell from 107.52111 to 107.36483.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785317353270,&quot;completed_at&quot;:1785317413277,&quot;elapsed_seconds&quot;:15504.2},{&quot;candidate_index&quot;:124,&quot;id&quot;:&quot;cand_959bfaab56c0&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;a79df75e81167010f67843c10abb8946560b7d07&quot;,&quot;cycles&quot;:1385,&quot;score&quot;:106.667148,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:106.667,&quot;hypothesis&quot;:&quot;Replacing the two depth-two pair-selection flow vselects with affine VALU multiply_adds over cached pair differences will relieve the serialized flow chain, reducing 1374 cycles to roughly 1371.&quot;,&quot;eval_summary&quot;:&quot;The affine cache-pair formulation overloads VALU; the original flow vselect chain schedules 11 cycles faster.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1385 and score fell from 107.52111 to 106.66715.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785317474714,&quot;completed_at&quot;:1785317578280,&quot;elapsed_seconds&quot;:15669.2},{&quot;candidate_index&quot;:125,&quot;id&quot;:&quot;cand_1bfab91bafda&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;820af6fe44063b93dcd115dde432aafca660cd57&quot;,&quot;cycles&quot;:1379,&quot;score&quot;:107.131255,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.131,&quot;hypothesis&quot;:&quot;Scalarizing the post-group depth-one index increment for residue-three contexts will preserve early cache-group readiness while freeing the following VALU slot, reducing 1374 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Scalar index increments and their flow readiness join add late ALU pressure; the original VALU increment is five cycles faster.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles regressed from 1374 to 1379 and score fell from 107.52111 to 107.13125.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785317679218,&quot;completed_at&quot;:1785317740936,&quot;elapsed_seconds&quot;:15831.8},{&quot;candidate_index&quot;:126,&quot;id&quot;:&quot;cand_d12b3867f74b&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;3101d49df1552e75f25751524e413f627a57e536&quot;,&quot;cycles&quot;:1374,&quot;score&quot;:107.521106,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.521,&quot;hypothesis&quot;:&quot;Moving residue-three depth-one scalar work from the sixth hash stage\u2019s first XOR to its final XOR will preserve engine totals while placing ALU work later, reducing 1374 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Shifting equal scalar work within the sixth hash stage does not alter the canonical critical path; the original first-XOR placement is equally fast.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but cycles and score remained unchanged at 1374 and 107.52111.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785317819249,&quot;completed_at&quot;:1785317896520,&quot;elapsed_seconds&quot;:15987.4},{&quot;candidate_index&quot;:127,&quot;id&quot;:&quot;cand_8a0f2c77a859&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;0ef27615bc39322bfb90cb51dd2b15011f39349d&quot;,&quot;cycles&quot;:1374,&quot;score&quot;:107.521106,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:107.521,&quot;hypothesis&quot;:&quot;Prioritizing ready nonterminal depth-one cache-group comparisons within VALU scheduling will advance cache selection without disturbing flow ordering, reducing 1374 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;Existing depth and load heuristics already schedule cache-group comparisons adequately; explicit VALU priority does not shorten the critical path.&quot;,&quot;decision_reason&quot;:&quot;Correctness passed, but canonical cycles and score remained unchanged at 1374 and 107.52111.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785317942027,&quot;completed_at&quot;:1785317982023,&quot;elapsed_seconds&quot;:16072.9},{&quot;candidate_index&quot;:128,&quot;id&quot;:&quot;cand_0a32a2cb8e0f&quot;,&quot;parent_id&quot;:&quot;cand_b27409d8c225&quot;,&quot;commit_sha&quot;:&quot;ef1cb7fab793c47fad5cb773deb931f19022d6c5&quot;,&quot;cycles&quot;:null,&quot;score&quot;:0.0,&quot;status&quot;:&quot;completed&quot;,&quot;decision&quot;:&quot;discard&quot;,&quot;mcts_visits&quot;:1,&quot;mcts_value_sum&quot;:0.0,&quot;hypothesis&quot;:&quot;Reusing the dead node-address vector for terminal writeback addresses will overlap address generation with the final hash and reduce 1374 cycles to roughly 1373.&quot;,&quot;eval_summary&quot;:&quot;`node_addresses` aliases hash temporary `tmp2`; final-hash writes overwrite the terminal addresses before stores use them.&quot;,&quot;decision_reason&quot;:&quot;Canonical correctness failed with an out-of-range store, so no valid cycle score was produced.&quot;,&quot;error&quot;:null,&quot;created_at&quot;:1785318029169,&quot;completed_at&quot;:1785318098467,&quot;elapsed_seconds&quot;:16189.4}]&lt;/script&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+  #mcts-run-006 {
+    color: var(--foreground);
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  #mcts-run-006-detail {
+    background: color-mix(in srgb, var(--background) 88%, transparent);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  #mcts-run-006 .mcts-copy {
+    margin-top: 0.5rem;
+  }
+
+  #mcts-run-006 .mcts-stage {
+    position: relative;
+    width: 100%;
+  }
+
+  #mcts-run-006 svg {
+    display: block;
+    height: auto;
+    overflow: visible;
+    width: 100%;
+  }
+
+  #mcts-run-006 .mcts-grid {
+    stroke: var(--border);
+    stroke-width: 1;
+  }
+
+  #mcts-run-006 .mcts-edge {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 1;
+  }
+
+  #mcts-run-006 .mcts-edge.is-path {
+    stroke: var(--viz-series-1);
+    stroke-width: 2;
+  }
+
+  #mcts-run-006 .mcts-node circle {
+    fill: var(--muted);
+    stroke: var(--muted-foreground);
+    stroke-width: 1;
+  }
+
+  #mcts-run-006 .mcts-node.is-keep circle {
+    fill: color-mix(in srgb, var(--viz-series-3) 34%, transparent);
+    stroke: var(--viz-series-3);
+  }
+
+  #mcts-run-006 .mcts-node.is-failed circle {
+    fill: color-mix(in srgb, var(--destructive) 48%, transparent);
+    stroke: var(--destructive);
+    stroke-width: 2;
+  }
+
+  #mcts-run-006 .mcts-failure-mark {
+    pointer-events: none;
+    stroke: var(--destructive);
+    stroke-width: 1.5;
+  }
+
+  #mcts-run-006 .mcts-node.is-path circle {
+    fill: color-mix(in srgb, var(--viz-series-1) 30%, transparent);
+    stroke: var(--viz-series-1);
+    stroke-width: 2;
+  }
+
+  #mcts-run-006 .mcts-node.is-winner circle {
+    fill: var(--viz-series-1);
+    stroke: var(--background);
+    stroke-width: 2;
+  }
+
+  #mcts-run-006 .mcts-node.is-selected circle {
+    stroke: var(--ring);
+    stroke-width: 3;
+  }
+
+  #mcts-run-006 .mcts-node:hover circle {
+    stroke: var(--foreground);
+  }
+
+  #mcts-run-006 .mcts-axis-label,
+  #mcts-run-006 .mcts-annotation {
+    fill: var(--muted-foreground);
+  }
+
+  #mcts-run-006 .mcts-annotation.is-winner {
+    fill: var(--foreground);
+    font-weight: 500;
+  }
+
+  #mcts-run-006 .mcts-legend {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.35rem;
+  }
+
+  #mcts-run-006 .mcts-key {
+    border-radius: 50%;
+    display: inline-block;
+    height: 0.65rem;
+    width: 0.65rem;
+  }
+
+  #mcts-run-006 .mcts-key-path {
+    background: var(--viz-series-1);
+  }
+
+  #mcts-run-006 .mcts-key-keep {
+    background: color-mix(in srgb, var(--viz-series-3) 45%, transparent);
+    border: 1px solid var(--viz-series-3);
+  }
+
+  #mcts-run-006 .mcts-key-discard {
+    background: var(--muted);
+    border: 1px solid var(--muted-foreground);
+  }
+
+  #mcts-run-006 .mcts-key-failed {
+    background: color-mix(in srgb, var(--destructive) 55%, transparent);
+    border: 2px solid var(--destructive);
+    border-radius: 0.15rem;
+  }
+
+  #mcts-run-006 .tooltip {
+    max-width: min(22rem, 80%);
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  #mcts-run-006 .tooltip.is-visible {
+    opacity: 1;
+  }
+&lt;/style&gt;
+
+&lt;script&gt;
+  (() =&gt; {
+    const root = document.getElementById(&quot;mcts-run-006&quot;);
+    const svg = root.querySelector(&quot;#mcts-run-006-svg&quot;);
+    const tooltip = root.querySelector(&quot;#mcts-run-006-tooltip&quot;);
+    const nodes = JSON.parse(root.querySelector(&quot;#mcts-run-006-data&quot;).textContent);
+    const byId = new Map(nodes.map((node) =&gt; [node.id, node]));
+    const children = new Map(nodes.map((node) =&gt; [node.id, []]));
+    nodes.forEach((node) =&gt; {
+      if (node.parent_id &amp;&amp; children.has(node.parent_id)) children.get(node.parent_id).push(node);
+    });
+    children.forEach((items) =&gt; items.sort((a, b) =&gt; a.candidate_index - b.candidate_index));
+
+    const treeRoot = nodes.find((node) =&gt; !node.parent_id);
+    let leafIndex = 0;
+    let maxDepth = 0;
+    function assignTreePosition(node, depth) {
+      node.depth = depth;
+      maxDepth = Math.max(maxDepth, depth);
+      const descendants = children.get(node.id);
+      if (!descendants.length) {
+        node.leaf = leafIndex++;
+        return node.leaf;
+      }
+      const positions = descendants.map((child) =&gt; assignTreePosition(child, depth + 1));
+      node.leaf = positions.reduce((sum, value) =&gt; sum + value, 0) / positions.length;
+      return node.leaf;
+    }
+    assignTreePosition(treeRoot, 0);
+
+    const width = 720;
+    const height = Math.max(540, leafIndex * 21 + 64);
+    const left = 34;
+    const right = 24;
+    const top = 42;
+    const bottom = 24;
+    const plotWidth = width - left - right;
+    const plotHeight = height - top - bottom;
+    nodes.forEach((node) =&gt; {
+      node.x = left + (node.depth / Math.max(1, maxDepth)) * plotWidth;
+      node.y = top + (node.leaf / Math.max(1, leafIndex - 1)) * plotHeight;
+    });
+    svg.setAttribute(&quot;viewBox&quot;, `0 0 ${width} ${height}`);
+
+    const ns = &quot;http://www.w3.org/2000/svg&quot;;
+    const make = (name, attributes = {}) =&gt; {
+      const element = document.createElementNS(ns, name);
+      Object.entries(attributes).forEach(([key, value]) =&gt; element.setAttribute(key, value));
+      return element;
+    };
+    const title = make(&quot;title&quot;, { id: &quot;mcts-run-006-title&quot; });
+    title.textContent = &quot;SPAR P=1 run-006 candidate tree&quot;;
+    const desc = make(&quot;desc&quot;, { id: &quot;mcts-run-006-desc&quot; });
+    desc.textContent = &quot;A 128-candidate SPAR P=1 tree for run-006, from the 147,734-cycle baseline to 1,374 cycles. Select a node for its hypothesis, outcome, lineage, visits, and elapsed time.&quot;;
+    svg.append(title, desc);
+
+    const depthStep = maxDepth &gt; 60 ? 10 : 5;
+    for (let depth = 0; depth &lt;= maxDepth; depth += depthStep) {
+      const x = left + (depth / Math.max(1, maxDepth)) * plotWidth;
+      svg.appendChild(make(&quot;line&quot;, { x1: x, x2: x, y1: top - 10, y2: height - bottom, class: &quot;mcts-grid&quot; }));
+      const label = make(&quot;text&quot;, { x, y: 30, &quot;text-anchor&quot;: &quot;middle&quot;, class: &quot;mcts-axis-label text-small&quot; });
+      label.textContent = depth;
+      svg.appendChild(label);
+    }
+    const depthLabel = make(&quot;text&quot;, { x: left, y: 14, class: &quot;mcts-axis-label text-small&quot; });
+    depthLabel.textContent = &quot;MCTS depth&quot;;
+    svg.appendChild(depthLabel);
+
+    const edgeLayer = make(&quot;g&quot;, { &quot;aria-hidden&quot;: &quot;true&quot; });
+    const nodeLayer = make(&quot;g&quot;);
+    svg.append(edgeLayer, nodeLayer);
+    const edgeByChild = new Map();
+    nodes.forEach((node) =&gt; {
+      if (!node.parent_id) return;
+      const parent = byId.get(node.parent_id);
+      const middle = (parent.x + node.x) / 2;
+      const path = make(&quot;path&quot;, {
+        d: `M ${parent.x} ${parent.y} C ${middle} ${parent.y}, ${middle} ${node.y}, ${node.x} ${node.y}`,
+        class: &quot;mcts-edge&quot;,
+      });
+      edgeLayer.appendChild(path);
+      edgeByChild.set(node.id, path);
+    });
+
+    const winner = nodes.reduce((best, node) =&gt; {
+      if (node.cycles == null) return best;
+      return !best || node.cycles &lt; best.cycles ? node : best;
+    }, null);
+    const linkById = new Map();
+    const radius = (node) =&gt; 3 + Math.min(3, Math.sqrt(Math.max(1, node.mcts_visits)) / 3);
+    nodes.forEach((node) =&gt; {
+      const link = make(&quot;a&quot;, {
+        href: &quot;#mcts-run-006-detail&quot;,
+        class: `mcts-node ${node.decision === &quot;keep&quot; ? &quot;is-keep&quot; : &quot;&quot;} ${node.cycles == null ? &quot;is-failed&quot; : &quot;&quot;} ${node.id === winner.id ? &quot;is-winner&quot; : &quot;&quot;}`,
+        &quot;data-id&quot;: node.id,
+        &quot;aria-label&quot;: `Candidate ${node.candidate_index}, ${node.cycles == null ? &quot;failed&quot; : `${node.cycles.toLocaleString()} cycles`}, ${node.decision || node.status}`,
+      });
+      const nodeRadius = radius(node);
+      link.appendChild(make(&quot;circle&quot;, { cx: node.x, cy: node.y, r: nodeRadius }));
+      if (node.cycles == null) {
+        const markRadius = nodeRadius * 0.55;
+        link.appendChild(make(&quot;line&quot;, {
+          x1: node.x - markRadius,
+          y1: node.y - markRadius,
+          x2: node.x + markRadius,
+          y2: node.y + markRadius,
+          class: &quot;mcts-failure-mark&quot;,
+        }));
+        link.appendChild(make(&quot;line&quot;, {
+          x1: node.x + markRadius,
+          y1: node.y - markRadius,
+          x2: node.x - markRadius,
+          y2: node.y + markRadius,
+          class: &quot;mcts-failure-mark&quot;,
+        }));
+      }
+      nodeLayer.appendChild(link);
+      linkById.set(node.id, link);
+
+      link.addEventListener(&quot;click&quot;, (event) =&gt; {
+        event.preventDefault();
+        selectNode(node);
+      });
+      link.addEventListener(&quot;mouseenter&quot;, () =&gt; showTooltip(node, link));
+      link.addEventListener(&quot;mouseleave&quot;, hideTooltip);
+      link.addEventListener(&quot;focus&quot;, () =&gt; showTooltip(node, link));
+      link.addEventListener(&quot;blur&quot;, hideTooltip);
+    });
+
+    const firstAtOrBelow = (threshold) =&gt;
+      nodes.find((node) =&gt; node.cycles != null &amp;&amp; node.cycles &lt;= threshold);
+    const annotationNodes = [
+      treeRoot,
+      firstAtOrBelow(10000),
+      firstAtOrBelow(2000),
+      firstAtOrBelow(1500),
+      winner,
+    ].filter((node, index, items) =&gt; node &amp;&amp; items.findIndex((item) =&gt; item.id === node.id) === index);
+    const annotationIds = new Map(annotationNodes.map((node, index) =&gt; [
+      node.id,
+      {
+        text: `C${node.candidate_index} · ${node.cycles.toLocaleString()}`,
+        dx: 7,
+        dy: index % 2 === 0 ? -10 : 16,
+      },
+    ]));
+    annotationIds.forEach((annotation, id) =&gt; {
+      const node = byId.get(id);
+      if (!node) return;
+      const nearRightEdge = node.x &gt; width - 100;
+      const label = make(&quot;text&quot;, {
+        x: node.x + (nearRightEdge ? -7 : annotation.dx),
+        y: node.y + annotation.dy,
+        &quot;text-anchor&quot;: nearRightEdge ? &quot;end&quot; : &quot;start&quot;,
+        class: `mcts-annotation text-small ${id === winner.id ? &quot;is-winner&quot; : &quot;&quot;}`,
+      });
+      label.textContent = annotation.text;
+      svg.appendChild(label);
+    });
+
+    function formatElapsed(totalSeconds) {
+      if (totalSeconds == null) return &quot;time unavailable&quot;;
+      const seconds = Math.round(totalSeconds);
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remainder = seconds % 60;
+      return `${hours}h ${String(minutes).padStart(2, &quot;0&quot;)}m ${String(remainder).padStart(2, &quot;0&quot;)}s`;
+    }
+
+    function selectedLineage(node) {
+      const ids = new Set();
+      let current = node;
+      while (current) {
+        ids.add(current.id);
+        current = current.parent_id ? byId.get(current.parent_id) : null;
+      }
+      return ids;
+    }
+
+    function selectNode(node) {
+      const lineage = selectedLineage(node);
+      linkById.forEach((link, id) =&gt; {
+        link.classList.toggle(&quot;is-path&quot;, lineage.has(id));
+        link.classList.toggle(&quot;is-selected&quot;, id === node.id);
+      });
+      edgeByChild.forEach((edge, id) =&gt; edge.classList.toggle(&quot;is-path&quot;, lineage.has(id)));
+
+      const parent = node.parent_id ? byId.get(node.parent_id) : null;
+      const delta = parent &amp;&amp; node.cycles != null &amp;&amp; parent.cycles != null ? node.cycles - parent.cycles : null;
+      root.querySelector(&quot;#mcts-run-006-candidate-index&quot;).textContent = `C${node.candidate_index}`;
+      root.querySelector(&quot;#mcts-run-006-candidate-id&quot;).textContent = node.id;
+      root.querySelector(&quot;#mcts-run-006-cycles&quot;).textContent = node.cycles == null ? &quot;No valid cycle result&quot; : `${node.cycles.toLocaleString()} cycles`;
+      root.querySelector(&quot;#mcts-run-006-parent-delta&quot;).textContent = delta == null ? &quot;root&quot; : delta &lt; 0 ? `${Math.abs(delta).toLocaleString()} fewer than parent` : delta &gt; 0 ? `${delta.toLocaleString()} more than parent` : &quot;tied parent&quot;;
+      root.querySelector(&quot;#mcts-run-006-decision&quot;).textContent = node.decision || node.status;
+      root.querySelector(&quot;#mcts-run-006-visits&quot;).textContent = `${node.mcts_visits.toLocaleString()} MCTS visit${node.mcts_visits === 1 ? &quot;&quot; : &quot;s&quot;}`;
+      root.querySelector(&quot;#mcts-run-006-elapsed&quot;).textContent = formatElapsed(node.elapsed_seconds);
+      root.querySelector(&quot;#mcts-run-006-hypothesis&quot;).textContent = node.hypothesis;
+      root.querySelector(&quot;#mcts-run-006-evaluation&quot;).textContent = node.error || node.eval_summary || &quot;No evaluation summary recorded.&quot;;
+      root.querySelector(&quot;#mcts-run-006-decision-reason&quot;).textContent = node.decision_reason || &quot;No decision rationale recorded.&quot;;
+    }
+
+    function showTooltip(node, link) {
+      tooltip.textContent = `C${node.candidate_index} · ${node.cycles == null ? &quot;failed&quot; : `${node.cycles.toLocaleString()} cycles`} · ${formatElapsed(node.elapsed_seconds)} · Hypothesis: ${node.hypothesis}`;
+      tooltip.classList.add(&quot;is-visible&quot;);
+      const stageRect = root.querySelector(&quot;.mcts-stage&quot;).getBoundingClientRect();
+      const nodeRect = link.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      const centered = nodeRect.left - stageRect.left + nodeRect.width / 2 - tooltipRect.width / 2;
+      const leftPosition = Math.max(4, Math.min(centered, stageRect.width - tooltipRect.width - 4));
+      const above = nodeRect.top - stageRect.top - tooltipRect.height - 8;
+      const topPosition = above &gt;= 0 ? above : nodeRect.bottom - stageRect.top + 8;
+      tooltip.style.left = `${leftPosition}px`;
+      tooltip.style.top = `${topPosition}px`;
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove(&quot;is-visible&quot;);
+    }
+
+    selectNode(winner);
+  })();
+&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set([&quot;top&quot;, &quot;right&quot;, &quot;bottom&quot;, &quot;left&quot;]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+
+  const getTrigger = (target) =&gt;
+    target?.nodeType === Node.ELEMENT_NODE
+      ? target.closest(&quot;[data-tooltip]&quot;)
+      : null;
+  const containsTarget = (trigger, target) =&gt;
+    target?.nodeType != null &amp;&amp; trigger.contains(target);
+  const getContent = (trigger) =&gt;
+    trigger.getAttribute(&quot;data-tooltip&quot;)?.trim() ?? &quot;&quot;;
+  const getPlacement = (trigger) =&gt; {
+    const placement = trigger.getAttribute(&quot;data-tooltip-placement&quot;);
+    return tooltipPlacements.has(placement) ? placement : &quot;top&quot;;
+  };
+  const getTooltip = () =&gt; {
+    if (tooltip == null) {
+      tooltip = document.createElement(&quot;div&quot;);
+      tooltip.id = tooltipId;
+      tooltip.className = &quot;tooltip&quot;;
+      tooltip.setAttribute(&quot;role&quot;, &quot;tooltip&quot;);
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) =&gt; {
+    const ids = new Set(
+      (trigger.getAttribute(&quot;aria-describedby&quot;) ?? &quot;&quot;)
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute(&quot;aria-describedby&quot;);
+    } else {
+      trigger.setAttribute(&quot;aria-describedby&quot;, [...ids].join(&quot; &quot;));
+    }
+  };
+  const clearOpenTimeout = () =&gt; {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) =&gt; {
+    clearOpenTimeout();
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) =&gt; {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-width&quot;,
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-height&quot;,
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: &quot;fixed&quot;,
+    })
+      .then(({ x, y }) =&gt; {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = &quot;visible&quot;;
+      })
+      .catch(() =&gt; {
+        if (activeTrigger === trigger &amp;&amp; request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) =&gt; {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = &quot;hidden&quot;;
+    floating.style.transform = &quot;translate(0, 0)&quot;;
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () =&gt; {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) =&gt; {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() &lt; skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() =&gt; {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) =&gt; {
+    if (event.pointerType === &quot;touch&quot;) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handleLeave = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger?.matches(&quot;:focus-visible&quot;)) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) =&gt; {
+    if (event.key === &quot;Escape&quot;) {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const destroy = () =&gt; {
+    closeTooltip(false);
+    document.removeEventListener(&quot;pointerover&quot;, handlePointerOpen);
+    document.removeEventListener(&quot;pointerout&quot;, handleLeave);
+    document.removeEventListener(&quot;focusin&quot;, handleFocusIn);
+    document.removeEventListener(&quot;focusout&quot;, handleLeave);
+    document.removeEventListener(&quot;keydown&quot;, handleKeyDown);
+    document.removeEventListener(&quot;contextmenu&quot;, handleContextMenu);
+    tooltip = null;
+  };
+
+  document.addEventListener(&quot;pointerover&quot;, handlePointerOpen);
+  document.addEventListener(&quot;pointerout&quot;, handleLeave);
+  document.addEventListener(&quot;focusin&quot;, handleFocusIn);
+  document.addEventListener(&quot;focusout&quot;, handleLeave);
+  document.addEventListener(&quot;keydown&quot;, handleKeyDown);
+  document.addEventListener(&quot;contextmenu&quot;, handleContextMenu);
+  window.addEventListener(&quot;pagehide&quot;, destroy, { once: true });
+})();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-lucide&quot; async src=&quot;https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  const initialize = () =&gt; {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById(&quot;codex-visualization-lucide&quot;)
+    ?.addEventListener(&quot;load&quot;, initialize, { once: true });
+})();
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+</body>
+</html>
